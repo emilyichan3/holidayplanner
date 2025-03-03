@@ -1,0 +1,177 @@
+:root {
+  --main-bg-color: #f8f8f8;
+}
+
+
+body {
+    background: var(--wrap-bg-color);
+    color: #333333;
+    margin-top: 5rem;
+  }
+  
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: #444444;
+  }
+  
+  ul {
+    margin: 0;
+    list-style-type: none;
+  }
+  
+  a {
+    text-decoration: none;
+  }
+
+  .bg-steel {
+    background-color: #5f788a;
+  }
+  
+  .site-header .navbar-nav .nav-link {
+    color: #cbd5db;
+  }
+  
+  .site-header .navbar-nav .nav-link:hover {
+    color: #ffffff;
+  }
+  
+  .site-header .navbar-nav .nav-link.active {
+    font-weight: 500;
+  }
+  
+  .content-section {
+    background: #ffffff;
+    padding: 10px 20px;
+    border: 1px solid #dddddd;
+    border-radius: 3px;
+    margin-bottom: 20px;
+  }
+  
+  .account-img {
+    height: 125px;
+    width: 125px;
+    margin-right: 20px;
+    margin-bottom: 16px;
+  }
+  
+  .account-heading {
+    font-size: 2.5rem;
+  }
+/* custom CSS */
+
+.d-lg-flex {
+  flex-wrap: wrap;
+}
+.col-all-data {
+  font-weight: bold;
+  width: 100%;
+  white-space: nowrap; /* Prevent text wrapping */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Add "..." if text overflows */
+}
+
+.col-1-data {
+  width: 30%;
+}
+
+.col-2-data {
+  width: 70%;
+}
+
+.col-image {
+  width: 250px; 
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+  footer {
+    color: #fff;
+    padding: 30px 0;
+  }
+  
+  footer h2, h5 {
+    color: #fff;
+    margin: 0;
+    font-weight: 500;
+  }
+  
+  .bg-footer {
+    background-color: #465c6b;
+  }
+
+  .footer-links a {
+    color: #fff;
+    text-decoration: none;
+    margin-right: 15px;
+    transition: color 0.3s ease;
+  }
+
+.footer-links a:hover {
+  color: #adb5bd;
+}
+
+table {
+  overflow:scroll; 
+}
+
+.custom-gap {
+  padding: 5px;
+}
+
+.custom-btn {
+  width: 70px; 
+  height: 30px; 
+  display: inline-flex; 
+  align-items: center; 
+  justify-content: center;
+}
+
+ul .custom-li {
+  list-style-type: none;
+}
+
+.menu-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.table-container {
+  box-shadow: 0 0 1px rgba(90, 5, 5, 0.2);
+  padding: 5px;
+}
+.table-container-1 {
+  display: flex;
+  box-shadow: 0 0 10px rgba(8, 144, 168, 0.2);
+  padding: 10px;
+  
+}
+.d-lg-flex div {
+  justify-content: center; 
+}
+
+.link_line {
+  display: flex;
+  gap: 20px; 
+  align-items: center; 
+}
+
+.link_line a {
+  text-decoration: none; 
+  color: blue; 
+}
+
+.link_line a:hover {
+  color: darkblue; 
+}
+
+.link_forcus {
+  font-weight: bold;
+}
+.table-layout {
+  table-layout: fixed;
+}

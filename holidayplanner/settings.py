@@ -136,7 +136,7 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 CRISPY_FAIL_SILENTLY = not DEBUG
 
-LOGIN_REDIRECT_URL = 'orders-home'
+LOGIN_REDIRECT_URL = 'trips-home'
 LOGIN_URL = 'login'
 
 # MEDIA_ROOT = BASE_DIR / 'media'
