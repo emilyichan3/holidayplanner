@@ -8,6 +8,7 @@ from .managers import CustomUserManager
 from cloudinary_storage.storage import MediaCloudinaryStorage
 from cloudinary.utils import cloudinary_url
 from django.templatetags.static import static
+from django_countries.fields import CountryField
 
 class Profile(AbstractUser):
     username = None
@@ -24,7 +25,8 @@ class Profile(AbstractUser):
     # below code is for stroing images on https://cloudinary.com/home
     image = models.ImageField(upload_to='profile_pics', storage=MediaCloudinaryStorage(), null=True, blank=True)
     dob = models.DateField(default=datetime.utcnow)
-    
+    country = CountryField(blank_label="(select country)", null=True, blank=True)
+
     def __str__(self):
         return self.email
     # below code is for storing images locally by pillow.

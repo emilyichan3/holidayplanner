@@ -1,0 +1,18 @@
+{% extends "trips/base.html" %}
+{% block content %}
+<button class="btn btn-outline-info">
+  <a
+  href="{% url 'trips-add-plan' %}"
+>
+  New Plan
+</a>
+</button>
+  <h2>Plans in {{ category.category_name }}</h2>
+  <ul>
+    {% for plan in plans %}
+      <li>{{ plan.plan_name }} - {{ plan.country }}</li>
+    {% empty %}
+      <li>No plans available for this category.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

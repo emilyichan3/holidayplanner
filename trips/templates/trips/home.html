@@ -1,0 +1,31 @@
+{% extends "trips/base.html" %}
+{% block content %}
+<div class="container d-lg-flex">
+  {% for category in categories %}
+  <div class="col-lg-6 table-container-1">
+    <table class="table table-borderless text-center ">
+      <tbody>
+        <tr>
+          <td class="col-all-data" >{{ category.category_name }}</td>
+        </tr>
+        <tr>
+          <td>{{ category.description }}</td>
+        </tr>
+    </tbody>
+    <tfoot>
+      <tr><td class="text-center table-success">
+        <span><a
+
+          href="{% url 'plans-by-category' category.id %}"
+        >
+          Plans
+        </a>
+      </span>
+      </td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+  {% endfor %}
+</div>
+{% endblock content %}

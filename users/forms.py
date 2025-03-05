@@ -6,20 +6,21 @@ from .models import Profile
 from datetime import date
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-
+from django_countries.fields import CountryField
+from django_countries.widgets import CountrySelectWidget
 
 User = get_user_model()
 # xxx/admin/
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = Profile
-        fields = ("email","first_name", "last_name",'image','dob')
+        fields = ("email","first_name", "last_name",'image','dob','country')
 
 
 class CustomUserChangeForm(UserChangeForm):
     class Meta:
         model = Profile
-        fields = ("email","first_name", "last_name",'image','dob')
+        fields = ("email","first_name", "last_name",'image','dob','country')
 
 
 class UserRegisterForm(UserCreationForm):
@@ -28,6 +29,9 @@ class UserRegisterForm(UserCreationForm):
     last_name = forms.CharField(max_length=150)
     dob = forms.DateField(label="Date of Birth",
                           widget=forms.DateInput(attrs={'type': 'date'}))
+    country = CountryField().formfield(label="Country",
+            widget=CountrySelectWidget()
+        )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -37,7 +41,7 @@ class UserRegisterForm(UserCreationForm):
 
     class Meta:
         model = Profile
-        fields = ['email', "first_name", "last_name", 'password1', 'password2', 'dob']
+        fields = ['email', "first_name", "last_name", 'password1', 'password2', 'dob','country']
 
     def clean_dob(self):
         dob = self.cleaned_data.get("dob")
@@ -53,10 +57,13 @@ class ProfileUpdateForm(forms.ModelForm):
                           widget=forms.DateInput(attrs={'type': 'date'}),
                           label="Date of Birth")
     image = forms.ImageField(required=False, widget=forms.ClearableFileInput(attrs={'clearable': 'true'}))
+    country = CountryField().formfield(label="Country",
+            widget=CountrySelectWidget()
+        )
 
     class Meta:
         model = Profile
-        fields = ["first_name", "last_name",'image', 'dob']
+        fields = ["first_name", "last_name",'image', 'dob','country']
 
     def clean_dob(self):
         dob = self.cleaned_data.get("dob")

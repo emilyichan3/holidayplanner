@@ -1,0 +1,24 @@
+{% extends "trips/base.html" %}
+
+{% block content %}
+  <h2>Create a Plan</h2>
+  <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Save Plan</button>
+  </form>
+
+  <h2>Existing Categories</h2>
+  <ul>
+      {% for category in categories %}
+          <li>{{ category.category_name }} - {{ category.description }}</li>
+      {% endfor %}
+  </ul>
+
+  <h2>Existing Plans</h2>
+  <ul>
+      {% for plan in plans %}
+          <li>{{ plan.plan_name }} ({{ plan.country }})</li>
+      {% endfor %}
+  </ul>
+{% endblock %}

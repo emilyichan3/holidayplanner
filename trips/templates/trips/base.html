@@ -28,7 +28,7 @@
             <div class="navbar-nav mr-auto">
               <a class="nav-item nav-link" href="">Explore Trips</a>
               {% if user.is_authenticated %}
-                <a class="nav-item nav-link" href="">My Plans</a>
+                <a class="nav-item nav-link" href="{% url 'trips-categories' %}">My Plans</a>
                 <a class="nav-item nav-link" href="">My Trips</a>
               {% endif %}
             </div>
