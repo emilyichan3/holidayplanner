@@ -19,6 +19,7 @@ from django.core.exceptions import ValidationError
 from .models import Plan, Category
 from django.views import View
 from .forms import PlanForm
+from django.views.generic import TemplateView
 
 User = get_user_model()
 
@@ -74,3 +75,7 @@ class PlansByCategoryView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         category_id = self.kwargs.get('category_id') 
         category = get_object_or_404(Category, id=category_id)
         return self.request.user == category.marker  # Check if the logged-in user is the caterer
+
+
+class CalculatorView(TemplateView):
+    template_name = 'trips/calculator.html' # we can define the template either here or in the urls

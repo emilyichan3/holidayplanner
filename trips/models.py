@@ -11,7 +11,7 @@ User = get_user_model()
     
 class Category(models.Model):
     category_name = models.CharField(max_length=200)
-    description = models.TextField(blank=True)
+    description = models.CharField(max_length=500, blank=True)
     date_created = models.DateTimeField(default=timezone.now)
     marker = models.ForeignKey(User, on_delete=models.CASCADE, related_name='marker')
      
@@ -30,3 +30,32 @@ class Plan(models.Model):
     
     def __str__(self):
         return f'{ self.plan_name } is in { self.country }'
+
+
+class Trip(models.Model):
+    trip_name = models.CharField(max_length=200)
+    trip_description = models.TextField(blank=True)
+    date_fm = models.DateTimeField(default=timezone.now)
+    date_to = models.DateTimeField(default=timezone.now)
+    link = models.TextField(null=True, blank=True)
+    country = CountryField(blank_label="(select country)", null=True, blank=True)
+    date_created = models.DateTimeField(default=timezone.now)
+    traveler = models.ForeignKey(User, on_delete=models.CASCADE, related_name='trip')
+    
+    def __str__(self):
+        return f'{ self.trip_name } is in { self.country }'
+
+
+class Schedule(models.Model):
+    destination = models.CharField(max_length=200)
+    country = CountryField(blank_label="(select country)", null=True, blank=True)
+    date_visited = models.DateTimeField(default=timezone.now)
+    link = models.TextField(null=True, blank=True)
+    note = models.TextField(blank=True)
+    date_created = models.DateTimeField(default=timezone.now)
+    image = models.ImageField(upload_to='trip_pics', storage=MediaCloudinaryStorage(), null=True, blank=True)
+    trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='schedule')
+    traveler = models.ForeignKey(User, on_delete=models.CASCADE, related_name='schedule')
+    
+    def __str__(self):
+        return f'{ self.destination } is in { self.country }'
