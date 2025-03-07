@@ -18,6 +18,9 @@ class Category(models.Model):
     def __str__(self):
         return f'category: { self.category_name }'
 
+    def get_absolute_url(self):
+        return reverse('trips-myCategory', kwargs={'user_id': self.marker.id})
+        
 
 class Plan(models.Model):
     plan_name = models.CharField(max_length=200)

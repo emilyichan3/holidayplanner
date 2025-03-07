@@ -18,7 +18,7 @@
     <header class="site-header">
       <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
         <div class="container">
-          <a class="navbar-brand mr-4" href="{% url 'trips-home' %}">Holiday Planner</a>
+          <a class="navbar-brand mr-4" href="">Holiday Planner</a>
           
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -26,10 +26,10 @@
            <!-- Navbar links -->
           <div class="collapse navbar-collapse" id="navbarToggle">
             <div class="navbar-nav mr-auto">
-              <a class="nav-item nav-link" href="">Explore Trips</a>
+              <a class="nav-item nav-link" href="">Explore Trip</a>
               {% if user.is_authenticated %}
-                <a class="nav-item nav-link" href="{% url 'trips-categories' %}">My Plans</a>
-                <a class="nav-item nav-link" href="">My Trips</a>
+                <a class="nav-item nav-link" href="{% url 'trips-myCategory' user_id=user.id %}">My Plan</a>
+                <a class="nav-item nav-link" href="">My Trip</a>
               {% endif %}
             </div>
             <div class="navbar-nav">
