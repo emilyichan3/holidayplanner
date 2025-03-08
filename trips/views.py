@@ -100,29 +100,11 @@ class MyCategoryDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             messages.error(self.request, "This category cannot be deleted because it has linked plans.")
             return redirect(reverse("trips-myCategory", kwargs={"user_id": category.marker.id}))
         return super().form_valid(form)  # Proceed with deletion if no menus exist
-    
-class PlanCreateView(LoginRequiredMixin, CreateView):
+
+
+class MyPlanByCategoryView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Plan
-    template_name = 'trips/plan_form.html'
-    fields = ['plan_name', 'note', 'link', 'country', 'categories']
-    success_url = "/"  # You can change this to the desired success URL after form submission
-
-    def form_valid(self, form):
-        # Automatically assign the logged-in user as the planner when the form is valid
-        form.instance.planner = self.request.user
-        return super().form_valid(form)
-
-    def get_context_data(self, **kwargs):
-        # Adding categories and plans to the context
-        context = super().get_context_data(**kwargs)
-        context['categories'] = Category.objects.all()  # Fetch all categories
-        context['plans'] = Plan.objects.all()  # Fetch all plans
-        return context
-
-
-class PlansByCategoryView(LoginRequiredMixin, UserPassesTestMixin, ListView):
-    model = Plan
-    template_name = 'trips/myPlan.html'
+    template_name = 'trips/myPlan_list.html'
     context_object_name = 'plans'
 
     def get_queryset(self):
@@ -139,6 +121,79 @@ class PlansByCategoryView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         category = get_object_or_404(Category, id=category_id)
         return self.request.user == category.marker  # Check if the logged-in user is the caterer
 
+
+class MyPlanListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = Plan
+    template_name = 'trips/myPlan_list.html' # we can define the template either here or in the urls
+    context_object_name = 'plans'
+
+    def get_queryset(self):
+        user = get_object_or_404(User, id=self.kwargs.get('user_id'))
+        plans = Plan.objects.filter(
+            planner=user,
+        )
+        return plans
+    
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context['plans'] = Plan.objects.all()  # Add all Plan objects to context
+    #     return context
+
+    def test_func(self):
+        return self.request.user.id == self.kwargs.get('user_id')
+
+
+class MyPlanCreateView(LoginRequiredMixin, CreateView):
+    model = Plan
+    template_name = 'trips/myPlan_form.html'
+    form_class = PlanForm
+    success_url = "/"  # You can change this to the desired success URL after form submission
+
+    def get_success_url(self):
+        """Dynamically generate the success URL with user_id."""
+        user_id = self.request.user.id
+        return reverse("trips-myPlan", kwargs={"user_id": user_id})
+
+    def form_valid(self, form):
+        # Automatically assign the logged-in user as the planner when the form is valid
+        form.instance.planner = self.request.user
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        # Adding categories and plans to the context
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Category.objects.all()  # Fetch all categories
+        context['plans'] = Plan.objects.all()  # Fetch all plans
+        return context
+
+
+class MyPlanUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Plan
+    template_name = 'trips/myPlan_form.html'
+    form_class = PlanForm
+
+    def get_success_url(self):
+        """Dynamically generate the success URL with user_id."""
+        user_id = self.request.user.id
+        return reverse("trips-myPlan", kwargs={"user_id": user_id})
+    
+    def test_func(self):
+        plan = self.get_object()
+        return self.request.user == plan.planner 
+
+
+class MyPlanDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Plan
+    template_name = 'trips/myPlan_confirm_delete.html'
+
+    def get_success_url(self):
+        """Dynamically generate the success URL with user_id."""
+        user_id = self.request.user.id
+        return reverse("trips-myPlan", kwargs={"user_id": user_id})
+
+    def test_func(self):
+        plan = self.get_object()
+        return self.request.user == plan.planner 
 
 
 class CalculatorView(TemplateView):

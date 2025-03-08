@@ -1,0 +1,38 @@
+{% extends "trips/base.html" %}
+{% load crispy_forms_tags %} <!-- Updated here to load crispy forms -->
+{% block content %}
+  <h2>Create a Plan</h2>
+  <form method="POST">
+      {% csrf_token %}
+      {% comment %} {{ form.as_p }}
+      <button type="submit">Save Plan</button> {% endcomment %}
+      <fieldset class="form-group">
+        <legend class="border-bottom mb-4">Plan Detail</legend> <!-- Text Changed here -->
+
+        {{ form|crispy }} <!-- Updated to load the form and let crispy take care of the --> 
+    </fieldset>
+    <div class="form-group">
+        <button class="btn btn-outline-info" type="submit">
+            {% if form.instance.pk %}
+            Update
+            {% else %}
+            Create
+            {% endif %}
+        </button>
+    </div>
+  </form>
+
+  <h2>Existing Categories</h2>
+  <ul>
+      {% for category in categories %}
+          <li>{{ category.category_name }} - {{ category.description }}</li>
+      {% endfor %}
+  </ul>
+
+  <h2>Existing Plans</h2>
+  <ul>
+      {% for plan in plans %}
+          <li>{{ plan.plan_name }} ({{ plan.country }})</li>
+      {% endfor %}
+  </ul>
+{% endblock %}

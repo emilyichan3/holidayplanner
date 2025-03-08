@@ -28,7 +28,8 @@
             <div class="navbar-nav mr-auto">
               <a class="nav-item nav-link" href="">Explore Trip</a>
               {% if user.is_authenticated %}
-                <a class="nav-item nav-link" href="{% url 'trips-myCategory' user_id=user.id %}">My Plan</a>
+                <a class="nav-item nav-link" href="{% url 'trips-myCategory' user_id=user.id %}">My Category</a>
+                <a class="nav-item nav-link" href="{% url 'trips-myPlan' user_id=user.id %}">My Plan</a>
                 <a class="nav-item nav-link" href="">My Trip</a>
               {% endif %}
             </div>
@@ -40,7 +41,7 @@
                   <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
                   <a class="nav-item nav-link" href="{% url 'register' %}">Register</a>
                 {% endif %}
-                <a class="nav-item nav-link" href="{% url 'calculator' %}">Calculator</a>
+                <a class="nav-item nav-link" href="{% url 'calculator' %}">Tool</a>
             </div>
           </div>
         </div>
