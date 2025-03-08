@@ -10,6 +10,12 @@ from .views import (
     MyPlanUpdateView,
     MyPlanDeleteView,
     MyPlanByCategoryView,
+    MyTripListView,
+    MyTripCreateView,
+    MyTripUpdateView,
+    MyTripDeleteView,
+    MyScheduleByTripListView,
+    MyScheduleByTripCreateView,
     CalculatorView
 )
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
@@ -25,6 +31,12 @@ urlpatterns = [
     path('myPlan/new/', MyPlanCreateView.as_view(), name='trips-myPlan-new'),
     path('myPlan/<int:pk>/update/', MyPlanUpdateView.as_view(), name='trips-myPlan-update'),
     path('myPlan/<int:pk>/delete/', MyPlanDeleteView.as_view(), name='trips-myPlan-delete'),
+    path('myTrip/<int:user_id>', MyTripListView.as_view(), name='trips-myTrip'),
+    path("myTrip/new", MyTripCreateView.as_view(), name='trips-myTrip-new'),
+    path('myTrip/<int:pk>/update/', MyTripUpdateView.as_view(), name='trips-myTrip-update'),
+    path('myTrip/<int:pk>/delete/', MyTripDeleteView.as_view(), name='trips-myTrip-delete'),
+    path('myTrip/<int:trip_id>/mySchedule/', MyScheduleByTripListView.as_view(), name='trips-mySchedule-by-myTrip'),
+    path('myTrip/<int:trip_id>/mySchedule/new', MyScheduleByTripCreateView.as_view(), name='trips-mySchedule-by-myTrip-new'),
     path("calculator/", CalculatorView.as_view(), name="calculator"),  # Use as_view()
 ]
 

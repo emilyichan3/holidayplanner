@@ -1,0 +1,31 @@
+{% extends "trips/base.html" %}
+{% load crispy_forms_tags %} <!-- Updated here to load crispy forms -->
+{% block content %}
+    <div class="content-section">
+        <form method="POST">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Schedule Detail</legend> <!-- Text Changed here -->
+
+                {{ form|crispy }} <!-- Updated to load the form and let crispy take care of the --> 
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">
+                    {% if form.instance.pk %}
+                    Update
+                    {% else %}
+                    Create
+                    {% endif %}
+                </button>
+                <a
+                  class="btn btn-outline-danger"
+                  href=""
+                  role="button"
+                >
+                  Delete
+                </a>
+              </div>
+        </form>
+        <!-- Changed here, div removed -->
+    </div>
+{% endblock content %}

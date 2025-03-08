@@ -30,7 +30,7 @@
               {% if user.is_authenticated %}
                 <a class="nav-item nav-link" href="{% url 'trips-myCategory' user_id=user.id %}">My Category</a>
                 <a class="nav-item nav-link" href="{% url 'trips-myPlan' user_id=user.id %}">My Plan</a>
-                <a class="nav-item nav-link" href="">My Trip</a>
+                <a class="nav-item nav-link" href="{% url 'trips-myTrip' user_id=user.id %}">My Trip</a> 
               {% endif %}
             </div>
             <div class="navbar-nav">
