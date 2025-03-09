@@ -17,13 +17,15 @@
                     Create
                     {% endif %}
                 </button>
-                <a
-                  class="btn btn-outline-danger"
-                  href="{% url 'trips-myTrip-delete' pk=trip.id %}"
-                  role="button"
-                >
-                  Delete
-                </a>
+                {% if form.instance.pk %}
+                  <a
+                    class="btn btn-outline-danger"
+                    href="{% url 'trips-myTrip-delete' pk=trip.id %}"
+                    role="button"
+                  >
+                    Delete
+                  </a>
+                {% endif %}
               </div>
         </form>
         <!-- Changed here, div removed -->

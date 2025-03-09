@@ -58,17 +58,33 @@ class myTripCreateForm(forms.ModelForm):
         
 
 class myScheduleCreateForm(forms.ModelForm):
+    trip_name = forms.CharField(max_length=200)
+    date_fm = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    date_to = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     destination = forms.CharField(max_length=200)
     date_visited = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
 
     class Meta:
         model = Schedule
-        fields = ['destination', 
+        fields = ['trip_name',
+                'date_fm',
+                'date_to',
+                'destination', 
                 'date_visited']
         
     def __init__(self, *args, **kwargs):
-        # trip = kwargs.pop('trip', None)  # Extract trip instance
+        trip = kwargs.pop('trip', None)  # Extract trip instance
         super().__init__(*args, **kwargs)
 
         if not self.instance.pk:  # Only set default for new forms, not existing ones
             self.fields['date_visited'].initial = date.today()
+
+        if trip:
+            self.fields['trip_name'].initial = trip.trip_name  
+            self.fields['date_fm'].initial = trip.date_fm 
+            self.fields['date_to'].initial = trip.date_to 
+            
+            # Make fields read-only if they shouldn't be changed
+            self.fields['trip_name'].widget.attrs['readonly'] = True
+            self.fields['date_fm'].widget.attrs['readonly'] = True
+            self.fields['date_to'].widget.attrs['readonly'] = True

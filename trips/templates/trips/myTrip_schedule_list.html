@@ -1,8 +1,9 @@
 {% extends "trips/base.html" %}
 {% block content %}
+<h1>Upcoming {{ trip.trip_name }} trip - From {{ trip.date_fm|date:'d/m/Y' }} to {{ trip.date_to|date:'d/m/Y' }}</h1>
 <button class="btn btn-outline-info">
   <a
-  href="{% url 'trips-mySchedule-by-myTrip-new' trip_id=trip_id %}"
+  href="{% url 'trips-mySchedule-by-myTrip-new' trip_id=trip.id %}"
 >
   Add Schedule
 </a>
@@ -26,7 +27,7 @@
             <div class="d-flex custom-gap">
               <button class="btn btn-outline-info">
               <a
-                href=""
+                href="{% url 'trips-mySchedule-by-myTrip-update' trip_id=schedule.trip.id pk=schedule.id%}"
               >
                 Update
               </a>
@@ -35,7 +36,7 @@
           <div class="d-flex custom-gap">
             <a
               class="btn btn-outline-danger"
-              href=""
+              href="{% url 'trips-mySchedule-by-myTrip-delete' trip_id=schedule.trip.id pk=schedule.id%}"
               role="button"
             >
               Delete

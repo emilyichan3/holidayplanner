@@ -1,6 +1,7 @@
 {% extends "trips/base.html" %}
 {% load crispy_forms_tags %} <!-- Updated here to load crispy forms -->
 {% block content %}
+<h1>Upcoming {{ trip.trip_name }} trip - From {{ trip.date_fm|date:'d/m/Y' }} to {{ trip.date_to|date:'d/m/Y' }}</h1>
     <div class="content-section">
         <form method="POST">
             {% csrf_token %}
@@ -17,13 +18,15 @@
                     Create
                     {% endif %}
                 </button>
-                <a
-                  class="btn btn-outline-danger"
-                  href=""
-                  role="button"
-                >
-                  Delete
-                </a>
+                {% if form.instance.pk %}
+                  <a
+                    class="btn btn-outline-danger"
+                    href=""
+                    role="button"
+                  >
+                    Delete
+                  </a>
+                {% endif %}
               </div>
         </form>
         <!-- Changed here, div removed -->

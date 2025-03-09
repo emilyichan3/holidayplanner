@@ -275,8 +275,11 @@ class MyScheduleByTripListView(LoginRequiredMixin, UserPassesTestMixin, ListView
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         trip_id = self.kwargs.get('trip_id')
+        # Fetch trip only once
+        if not hasattr(self, 'trip'):
+            self.trip = get_object_or_404(Trip, id=trip_id)
 
-        context['trip_id'] = trip_id
+        context['trip'] = self.trip
         return context
     
     def test_func(self):
@@ -291,6 +294,23 @@ class MyScheduleByTripCreateView(LoginRequiredMixin, CreateView):
     form_class = myScheduleCreateForm
     success_url = "/"
 
+    def get_form_kwargs(self):
+        # Pass menu instance to form
+        kwargs = super().get_form_kwargs()
+        trip = get_object_or_404(Trip, id=self.kwargs.get('trip_id'))
+        kwargs['trip'] = trip 
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        trip_id = self.kwargs.get('trip_id')
+        # Fetch trip only once
+        if not hasattr(self, 'trip'):
+            self.trip = get_object_or_404(Trip, id=trip_id)
+
+        context['trip'] = self.trip
+        return context
+
     def form_valid(self, form):
         trip_id = self.kwargs.get('trip_id')
         trip = get_object_or_404(Trip, id=trip_id)
@@ -303,6 +323,50 @@ class MyScheduleByTripCreateView(LoginRequiredMixin, CreateView):
         trip_id = self.kwargs.get('trip_id')
         return reverse("trips-mySchedule-by-myTrip", kwargs={"trip_id": trip_id})
 
+
+class MyScheduleByTripUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Schedule
+    template_name = 'trips/myTrip_schedule_form.html'
+    form_class = myScheduleCreateForm
+
+    def get_form_kwargs(self):
+        # Pass menu instance to form
+        kwargs = super().get_form_kwargs()
+        trip = get_object_or_404(Trip, id=self.kwargs.get('trip_id'))
+        kwargs['trip'] = trip 
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        trip_id = self.kwargs.get('trip_id')
+        # Fetch trip only once
+        if not hasattr(self, 'trip'):
+            self.trip = get_object_or_404(Trip, id=trip_id)
+
+        context['trip'] = self.trip
+        return context
+        
+    def get_success_url(self):
+        schedule = get_object_or_404(Schedule, id=int(self.kwargs.get('pk')))
+        return reverse("trips-mySchedule-by-myTrip", kwargs={"trip_id": schedule.trip.id})
+    
+    def test_func(self):
+        schedule = self.get_object()
+        return self.request.user == schedule.traveler 
+
+
+class MyScheduleByTripDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Schedule
+    template_name = 'trips/myTrip_schedule_delete.html'
+
+    def get_success_url(self):
+        trip_id = self.kwargs.get('trip_id')
+        return reverse("trips-mySchedule-by-myTrip", kwargs={"trip_id": trip_id})
+    
+    def test_func(self):
+        schedule = self.get_object()
+        return self.request.user == schedule.traveler
+    
 
 class CalculatorView(TemplateView):
     template_name = 'trips/calculator.html' # we can define the template either here or in the urls
