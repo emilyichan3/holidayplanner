@@ -142,12 +142,17 @@ class MyPlanCreateView(LoginRequiredMixin, CreateView):
     model = Plan
     template_name = 'trips/myPlan_form.html'
     form_class = PlanForm
-    success_url = "/"  # You can change this to the desired success URL after form submission
-
+ 
     def get_success_url(self):
         """Dynamically generate the success URL with user_id."""
         user_id = self.request.user.id
         return reverse("trips-myPlan", kwargs={"user_id": user_id})
+
+    def get_form_kwargs(self):
+        """Pass the logged-in user to the form dynamically."""
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
     def form_valid(self, form):
         # Automatically assign the logged-in user as the planner when the form is valid
@@ -157,8 +162,13 @@ class MyPlanCreateView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         # Adding categories and plans to the context
         context = super().get_context_data(**kwargs)
-        context['categories'] = Category.objects.all()  # Fetch all categories
-        context['plans'] = Plan.objects.all()  # Fetch all plans
+        user = get_object_or_404(User, id= self.request.user.id)
+        categories = Category.objects.filter(
+            marker=user,
+        )
+        context['categories'] = categories        
+        plans = Plan.objects.filter(categories__in=categories)
+        context['plans'] = plans
         return context
 
 
@@ -274,18 +284,13 @@ class MyScheduleByTripListView(LoginRequiredMixin, UserPassesTestMixin, ListView
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        trip_id = self.kwargs.get('trip_id')
-        # Fetch trip only once
-        if not hasattr(self, 'trip'):
-            self.trip = get_object_or_404(Trip, id=trip_id)
-
-        context['trip'] = self.trip
+        trip = get_object_or_404(Trip, id=self.kwargs.get('trip_id'))
+        context['trip'] = trip
         return context
     
     def test_func(self):
-        trip_id = self.kwargs.get('trip_id') 
-        schedule = get_object_or_404(Schedule, id=trip_id)
-        return self.request.user == schedule.traveler  # Check if the logged-in user is the caterer
+        trip = get_object_or_404(Trip, id=self.kwargs.get('trip_id'))  # Ensure self.trip exists
+        return self.request.user == trip.traveler 
 
 
 class MyScheduleByTripCreateView(LoginRequiredMixin, CreateView):
@@ -312,10 +317,16 @@ class MyScheduleByTripCreateView(LoginRequiredMixin, CreateView):
         return context
 
     def form_valid(self, form):
-        trip_id = self.kwargs.get('trip_id')
-        trip = get_object_or_404(Trip, id=trip_id)
+        trip = get_object_or_404(Trip, id=self.kwargs.get('trip_id'))
         form.instance.trip = trip
         form.instance.traveler = self.request.user
+        if form.instance.date_visited < trip.date_fm:
+            messages.error(self.request, f"The date visited must be on or after the trip's frist date.: {trip.date_fm.strftime('%Y-%m-%d')}.")
+            return redirect(reverse("trips-mySchedule-by-myTrip", kwargs={"trip_id": self.kwargs.get('trip_id')}))
+        if form.instance.date_visited > trip.date_to:
+            messages.error(self.request, f"The date visited must be on or before the trip's last date.: {trip.date_to.strftime('%Y-%m-%d')}.")
+            return redirect(reverse("trips-mySchedule-by-myTrip", kwargs={"trip_id": self.kwargs.get('trip_id')}))
+  
         return super().form_valid(form)
     
     def get_success_url(self):
@@ -342,7 +353,6 @@ class MyScheduleByTripUpdateView(LoginRequiredMixin, UserPassesTestMixin, Update
         # Fetch trip only once
         if not hasattr(self, 'trip'):
             self.trip = get_object_or_404(Trip, id=trip_id)
-
         context['trip'] = self.trip
         return context
         
@@ -353,6 +363,18 @@ class MyScheduleByTripUpdateView(LoginRequiredMixin, UserPassesTestMixin, Update
     def test_func(self):
         schedule = self.get_object()
         return self.request.user == schedule.traveler 
+
+    def form_valid(self, form):
+        trip = get_object_or_404(Trip, id=self.kwargs.get('trip_id'))
+        form.instance.trip = trip
+        form.instance.traveler = self.request.user
+        if form.instance.date_visited < trip.date_fm:
+            messages.error(self.request, f"The date visited must be on or after the trip's frist date.: {trip.date_fm.strftime('%Y-%m-%d')}.")
+            return redirect(reverse("trips-mySchedule-by-myTrip", kwargs={"trip_id": self.kwargs.get('trip_id')}))
+        if form.instance.date_visited > trip.date_to:
+            messages.error(self.request, f"The date visited must be on or before the trip's last date.: {trip.date_to.strftime('%Y-%m-%d')}.")
+            return redirect(reverse("trips-mySchedule-by-myTrip", kwargs={"trip_id": self.kwargs.get('trip_id')}))
+        return super().form_valid(form)
 
 
 class MyScheduleByTripDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):

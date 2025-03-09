@@ -11,10 +11,15 @@ User = get_user_model()
 
 class PlanForm(forms.ModelForm):
     categories = forms.ModelMultipleChoiceField(
-        queryset=Category.objects.all(),
+        queryset=Category.objects.none(),  # Set dynamically in __init__
         widget=forms.CheckboxSelectMultiple,  # This allows users to select multiple categories
         required=True
     )
+
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if user:
+            self.fields['categories'].queryset = Category.objects.filter(marker=user)
 
     class Meta:
         model = Plan
