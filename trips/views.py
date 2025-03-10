@@ -23,10 +23,9 @@ from django.views.generic import TemplateView
 
 User = get_user_model()
 
-class home(ListView):
-    model = Category
+class home(TemplateView):
     template_name = 'trips/home.html' # we can define the template either here or in the urls
-    context_object_name = 'categories'
+
 
 
 class MyCategoryListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
@@ -151,7 +150,8 @@ class MyPlanCreateView(LoginRequiredMixin, CreateView):
     def get_form_kwargs(self):
         """Pass the logged-in user to the form dynamically."""
         kwargs = super().get_form_kwargs()
-        kwargs['user'] = self.request.user
+        kwargs['user'] = self.request.user  # Ensure user is added
+        print(f"get_form_kwargs: {kwargs}")  # Debugging output
         return kwargs
 
     def form_valid(self, form):
@@ -181,6 +181,13 @@ class MyPlanUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         """Dynamically generate the success URL with user_id."""
         user_id = self.request.user.id
         return reverse("trips-myPlan", kwargs={"user_id": user_id})
+    
+    def get_form_kwargs(self):
+        """Pass the logged-in user to the form dynamically."""
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user  # Ensure user is added
+        print(f"get_form_kwargs: {kwargs}")  # Debugging output
+        return kwargs
     
     def test_func(self):
         plan = self.get_object()
@@ -389,6 +396,27 @@ class MyScheduleByTripDeleteView(LoginRequiredMixin, UserPassesTestMixin, Delete
         schedule = self.get_object()
         return self.request.user == schedule.traveler
     
+
+class MyScheduleSearchByMyPlanListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = Plan
+    template_name = 'trips/myTrip_schedule_seach.html' # we can define the template either here or in the urls
+    context_object_name = 'plans'
+
+    def get_queryset(self):
+        user = get_object_or_404(User, id=self.kwargs.get('user_id'))
+        plans = Plan.objects.filter(
+            planner=user,
+        ).order_by('country')
+        return plans
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        trip = get_object_or_404(Trip, id=self.kwargs.get('trip_id'))
+        context['trip'] = trip
+        return context
+
+    def test_func(self):
+        return self.request.user.id == self.kwargs.get('user_id')
 
 class CalculatorView(TemplateView):
     template_name = 'trips/calculator.html' # we can define the template either here or in the urls

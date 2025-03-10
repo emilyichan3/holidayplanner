@@ -6,8 +6,14 @@
   href="{% url 'trips-mySchedule-by-myTrip-new' trip_id=trip.id %}"
 >
   Add Schedule
-</a>
+  </a>
 </button>
+<button class="btn btn-outline-info">
+  <a
+  href="{% url 'trips-mySchedule-Search' trip_id=trip.id user_id=trip.traveler.id %}"
+>
+  Convert from MyPlan
+  </a>
 </button>
 <div class="table-responsive">
   <table class="table table-striped table-hover">

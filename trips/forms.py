@@ -7,8 +7,6 @@ from datetime import date, timedelta
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-User = get_user_model()
-
 class PlanForm(forms.ModelForm):
     categories = forms.ModelMultipleChoiceField(
         queryset=Category.objects.none(),  # Set dynamically in __init__
@@ -16,8 +14,10 @@ class PlanForm(forms.ModelForm):
         required=True
     )
 
-    def __init__(self, *args, user=None, **kwargs):
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)  # Extract menu instance
         super().__init__(*args, **kwargs)
+        print(f"PlanForm initialized with user: {user}")  # Debugging output
         if user:
             self.fields['categories'].queryset = Category.objects.filter(marker=user)
 
