@@ -20,6 +20,7 @@ from .models import Plan, Category, Trip, Schedule
 from django.views import View
 from .forms import PlanForm, myTripCreateForm, myScheduleCreateForm
 from django.views.generic import TemplateView
+from django.core.paginator import Paginator
 
 User = get_user_model()
 
@@ -407,7 +408,18 @@ class MyScheduleSearchByMyPlanListView(LoginRequiredMixin, UserPassesTestMixin, 
         plans = Plan.objects.filter(
             planner=user,
         ).order_by('country')
+        q_country = self.request.GET.get("q_country")
+        q_plan_name = self.request.GET.get("q_plan_name")
+        q_category = self.request.GET.get("q_category")
+        
+        if q_country:
+            plans = plans.filter(country__icontains=q_country)
+        if q_plan_name:
+            plans = plans.filter(country__icontains=q_plan_name)
+        if q_category:
+            plans = plans.filter(categories__category_name__icontains=q_category)
         return plans
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
