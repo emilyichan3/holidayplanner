@@ -23,7 +23,7 @@ class PlanForm(forms.ModelForm):
 
     class Meta:
         model = Plan
-        fields = ['plan_name', 'note', 'link', 'country', 'categories']
+        fields = ['plan_name', 'link', 'country', 'city','categories', 'note' ]
 
 
 class myTripCreateForm(forms.ModelForm):
@@ -63,19 +63,23 @@ class myTripCreateForm(forms.ModelForm):
         
 
 class myScheduleCreateForm(forms.ModelForm):
-    trip_name = forms.CharField(max_length=200)
-    date_fm = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    date_to = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    # trip_name = forms.CharField(max_length=200)
+    # date_fm = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    # date_to = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     destination = forms.CharField(max_length=200)
+    city = forms.CharField(max_length=80, required=False)
     date_visited = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-
+    image = forms.ImageField(required=False, widget=forms.ClearableFileInput(attrs={'clearable': 'true'}))
+    
     class Meta:
         model = Schedule
-        fields = ['trip_name',
-                'date_fm',
-                'date_to',
-                'destination', 
-                'date_visited']
+        fields = ['destination', 
+                'date_visited',
+                'link',
+                'country',
+                'city',
+                'image',
+                'attachement']
         
     def __init__(self, *args, **kwargs):
         trip = kwargs.pop('trip', None)  # Extract trip instance
@@ -84,12 +88,12 @@ class myScheduleCreateForm(forms.ModelForm):
         if not self.instance.pk:  # Only set default for new forms, not existing ones
             self.fields['date_visited'].initial = date.today()
 
-        if trip:
-            self.fields['trip_name'].initial = trip.trip_name  
-            self.fields['date_fm'].initial = trip.date_fm 
-            self.fields['date_to'].initial = trip.date_to 
+        # if trip:
+        #     self.fields['trip_name'].initial = trip.trip_name  
+        #     self.fields['date_fm'].initial = trip.date_fm 
+        #     self.fields['date_to'].initial = trip.date_to 
             
-            # Make fields read-only if they shouldn't be changed
-            self.fields['trip_name'].widget.attrs['readonly'] = True
-            self.fields['date_fm'].widget.attrs['readonly'] = True
-            self.fields['date_to'].widget.attrs['readonly'] = True
+        #     # Make fields read-only if they shouldn't be changed
+        #     self.fields['trip_name'].widget.attrs['readonly'] = True
+        #     self.fields['date_fm'].widget.attrs['readonly'] = True
+        #     self.fields['date_to'].widget.attrs['readonly'] = True

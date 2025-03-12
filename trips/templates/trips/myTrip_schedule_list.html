@@ -19,16 +19,35 @@
   <table class="table table-striped table-hover">
     <thead>
       <tr>
-        <th scope="col">Destination</th>
+        <th scope="col"></th>
         <th scope="col">Date</th>
+        <th scope="col">Where</th>
+        <th scope="col">Destination</th>
         <th scope="col"></th>
       </tr>
     </thead>
     <tbody>
       {% for schedule in schedules %}
         <tr>
-          <td>{{ schedule.destination }}</td>
+          <td>
+            <div class="media">
+              <img class="rounded-circle account-img" src="{{ schedule.get_image_url }}">
+          </div>
           <td>{{ schedule.date_visited|date:'d/m/Y' }}</td>
+          <td>
+            {% if schedule.country %}
+              {{ schedule.country.name }} {{ schedule.city }}
+            {% else %}
+              {{ schedule.city }}
+            {% endif %}
+          </td>          
+          <td>
+            {% if schedule.link %}
+            <a href="{{ schedule.link }}" target="_blank">{{ schedule.destination }}
+            {% else %}
+            {{ schedule.destination }}
+            {% endif %}
+          </td>
           <td>
             <div class="d-flex custom-gap">
               <button class="btn btn-outline-info">
@@ -37,6 +56,7 @@
               >
                 Update
               </a>
+            </button>
             </div>
           </div>
           <div class="d-flex custom-gap">

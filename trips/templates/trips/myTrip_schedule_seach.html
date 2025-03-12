@@ -3,6 +3,7 @@
 <h1>Upcoming {{ trip.trip_name }} trip - From {{ trip.date_fm|date:'d/m/Y' }} to {{ trip.date_to|date:'d/m/Y' }}</h1>
 <form method="GET">
   <input type="text" name="q_country" placeholder="Search country..." value="{{ request.GET.q_country }}">
+  <input type="text" name="q_city" placeholder="Search city..." value="{{ request.GET.q_city }}">
   <input type="text" name="q_plan_name" placeholder="Search plan name..." value="{{ request.GET.q_plan_name }}">
   <input type="text" name="q_category" placeholder="Search category..." value="{{ request.GET.q_category }}">
   <button type="submit">Search</button>
@@ -13,9 +14,8 @@
       <thead>
         <tr>
           <th scope="col">Plan</th>
-          <th scope="col">Description</th>
-          <th scope="col">Country</th>
-          <th scope="col">Link</th>
+          <th scope="col">Country/City</th>
+          <th scope="col">Note</th>
           <th scope="col">Category</th>
           <th scope="col"></th>
         </tr>
@@ -25,24 +25,29 @@
           <tr>
             <td>
               <div class="d-flex custom-gap">
-                <button class="btn btn-outline-info">
-                <a
-                  href=""
-                >
-                  Select-pending
-                </a>
-              </button>
+                {% if plan.id in added_plans %}
+                  <button class="btn btn-outline-info" disabled>Added</button>
+                {% else %}
+                  <form method="POST" action="{% url 'add_plan_to_mytrip' trip.id plan.id %}">
+                    {% csrf_token %}
+                      <button type="submit" class="btn btn-outline-info">Select</button>
+                  </form>
+                {% endif %}
               </div>
-            </div>
             </td>
-            <td>{{ plan.plan_name }}</td>
+            <td>
+              {% if plan.link %}
+                <a href="{{ plan.link }}" target="_blank">{{ plan.plan_name }}
+              {% else %}
+                {{ plan.plan_name }}
+              {% endif %}
+            </td>
             <td>{{ plan.note }}</td>
-            <td>{{ plan.country }}</td>
-            <td>{{ plan.link }}</td>
+            <td>{{ plan.country.name }} {{ plan.city }}</td>
             <td>
               <ul>
                 {% for category in plan.categories.all %}
-                    <li>{{ category.category_name }} - {{ category.description }}</li>
+                    <li>{{ category.category_name }}</li>
                 {% endfor %}
               </ul>
             </td>

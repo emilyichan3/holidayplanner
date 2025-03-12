@@ -12,9 +12,8 @@
       <thead>
         <tr>
           <th scope="col">Plan</th>
-          <th scope="col">Description</th>
-          <th scope="col">Country</th>
-          <th scope="col">Link</th>
+          <th scope="col">Note</th>
+          <th scope="col">Where</th>
           <th scope="col">Category</th>
           <th scope="col"></th>
         </tr>
@@ -22,14 +21,25 @@
       <tbody>
         {% for plan in plans %}
           <tr>
-            <td>{{ plan.plan_name }}</td>
+            <td>
+              {% if plan.link %}
+                <a href="{{ plan.link }}" target="_blank">{{ plan.plan_name }}
+              {% else %}
+                {{ plan.plan_name }}
+              {% endif %}
+            </td>
             <td>{{ plan.note }}</td>
-            <td>{{ plan.country }}</td>
-            <td>{{ plan.link }}</td>
+            <td>
+              {% if plan.country %}
+                {{ plan.country.name }} {{ plan.city }}
+              {% else %}
+                {{ plan.city }}
+              {% endif %}
+            </td>        
             <td>
               <ul>
                 {% for category in plan.categories.all %}
-                    <li>{{ category.category_name }} - {{ category.description }}</li>
+                    <li>{{ category.category_name }}</li>
                 {% endfor %}
               </ul>
             </td>
@@ -41,6 +51,7 @@
                 >
                   Update
                 </a>
+              </button>
               </div>
             </div>
             <div class="d-flex custom-gap">

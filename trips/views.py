@@ -409,26 +409,31 @@ class MyScheduleSearchByMyPlanListView(LoginRequiredMixin, UserPassesTestMixin, 
             planner=user,
         ).order_by('country')
         q_country = self.request.GET.get("q_country")
+        q_city = self.request.GET.get("q_city")
         q_plan_name = self.request.GET.get("q_plan_name")
         q_category = self.request.GET.get("q_category")
         
         if q_country:
             plans = plans.filter(country__icontains=q_country)
+        if q_city:
+            plans = plans.filter(city__icontains=q_city)            
         if q_plan_name:
             plans = plans.filter(country__icontains=q_plan_name)
         if q_category:
             plans = plans.filter(categories__category_name__icontains=q_category)
         return plans
 
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         trip = get_object_or_404(Trip, id=self.kwargs.get('trip_id'))
         context['trip'] = trip
+        added_plans = Schedule.objects.filter(trip=trip).values_list('plan_id', flat=True)
+        context['added_plans'] = added_plans
         return context
 
     def test_func(self):
         return self.request.user.id == self.kwargs.get('user_id')
+
 
 class CalculatorView(TemplateView):
     template_name = 'trips/calculator.html' # we can define the template either here or in the urls
