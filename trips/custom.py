@@ -5,7 +5,7 @@ from django.urls import reverse_lazy, reverse
 from django.shortcuts import redirect
 from .models import Plan, Category, Trip, Schedule
 
-def add_plan_to_mytrip(request, trip_id, plan_id):
+def convert_plan_to_mySchedule(request, trip_id, plan_id):
     trip = get_object_or_404(Trip, id=trip_id)
     plan = get_object_or_404(Plan, id=plan_id)
     
@@ -23,7 +23,8 @@ def add_plan_to_mytrip(request, trip_id, plan_id):
         city=plan.city,
         link=plan.link,
         note=plan.note,
-        date_visited=trip.date_fm,
+        scheduled_date=trip.date_fm,
+        scheduled_time=None,
         trip=trip,  
         plan=plan,
         traveler=request.user  

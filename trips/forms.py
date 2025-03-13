@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 # from crispy_forms.helper import FormHelper
 # from crispy_forms.layout import Submit
 from .models import Plan, Category, Trip, Schedule
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 
@@ -63,18 +63,17 @@ class myTripCreateForm(forms.ModelForm):
         
 
 class myScheduleCreateForm(forms.ModelForm):
-    # trip_name = forms.CharField(max_length=200)
-    # date_fm = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    # date_to = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     destination = forms.CharField(max_length=200)
     city = forms.CharField(max_length=80, required=False)
-    date_visited = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    scheduled_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    scheduled_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
     image = forms.ImageField(required=False, widget=forms.ClearableFileInput(attrs={'clearable': 'true'}))
     
     class Meta:
         model = Schedule
         fields = ['destination', 
-                'date_visited',
+                'scheduled_date',
+                'scheduled_time',
                 'link',
                 'country',
                 'city',
@@ -86,7 +85,9 @@ class myScheduleCreateForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         if not self.instance.pk:  # Only set default for new forms, not existing ones
-            self.fields['date_visited'].initial = date.today()
+            self.fields['scheduled_date'].initial = date.today()
+            # self.fields['scheduled_time'].initial = datetime.now().replace(minute=0, second=0, microsecond=0).time()
+
 
         # if trip:
         #     self.fields['trip_name'].initial = trip.trip_name  

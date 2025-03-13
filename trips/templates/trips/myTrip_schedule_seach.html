@@ -1,6 +1,13 @@
 {% extends "trips/base.html" %}
 {% block content %}
 <h1>Upcoming {{ trip.trip_name }} trip - From {{ trip.date_fm|date:'d/m/Y' }} to {{ trip.date_to|date:'d/m/Y' }}</h1>
+<button class="btn btn-outline-info">
+  <a
+  href="{% url 'trips-mySchedule-by-myTrip' trip_id=trip.id %}"
+>
+  Go back 
+  </a>
+</button>
 <form method="GET">
   <input type="text" name="q_country" placeholder="Search country..." value="{{ request.GET.q_country }}">
   <input type="text" name="q_city" placeholder="Search city..." value="{{ request.GET.q_city }}">
@@ -28,7 +35,7 @@
                 {% if plan.id in added_plans %}
                   <button class="btn btn-outline-info" disabled>Added</button>
                 {% else %}
-                  <form method="POST" action="{% url 'add_plan_to_mytrip' trip.id plan.id %}">
+                  <form method="POST" action="{% url 'trips-mySchedule-myPlan-Convert' trip.id plan.id %}">
                     {% csrf_token %}
                       <button type="submit" class="btn btn-outline-info">Select</button>
                   </form>

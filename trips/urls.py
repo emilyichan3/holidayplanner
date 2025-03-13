@@ -22,7 +22,7 @@ from .views import (
     CalculatorView
 )
 from .custom import (
-    add_plan_to_mytrip,
+    convert_plan_to_mySchedule,
 )
 
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
@@ -47,7 +47,7 @@ urlpatterns = [
     path('myTrip/<int:trip_id>/mySchedule/<int:pk>/update', MyScheduleByTripUpdateView.as_view(), name='trips-mySchedule-by-myTrip-update'),
     path('myTrip/<int:trip_id>/mySchedule/<int:pk>/delete', MyScheduleByTripDeleteView.as_view(), name='trips-mySchedule-by-myTrip-delete'),
     path('myTrip/<int:trip_id>/mySchedule/Search/<int:user_id>', MyScheduleSearchByMyPlanListView.as_view(), name='trips-mySchedule-Search'),
-    path('trip/<int:trip_id>/add_plan/<int:plan_id>/', add_plan_to_mytrip, name='add_plan_to_mytrip'),
+    path('myTrip/<int:trip_id>/mySchedule/Convert/<int:plan_id>/', convert_plan_to_mySchedule, name='trips-mySchedule-myPlan-Convert'),
     path("calculator/", CalculatorView.as_view(), name="calculator"),  # Use as_view()
 ]
 

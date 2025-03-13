@@ -21,6 +21,7 @@
       <tr>
         <th scope="col"></th>
         <th scope="col">Date</th>
+        <th scope="col">Time</th>
         <th scope="col">Where</th>
         <th scope="col">Destination</th>
         <th scope="col"></th>
@@ -33,7 +34,8 @@
             <div class="media">
               <img class="rounded-circle account-img" src="{{ schedule.get_image_url }}">
           </div>
-          <td>{{ schedule.date_visited|date:'d/m/Y' }}</td>
+          <td>{{ schedule.scheduled_date|date:'d/m/Y' }}</td>
+          <td>{{ schedule.scheduled_time|time:"h A" }}</td>
           <td>
             {% if schedule.country %}
               {{ schedule.country.name }} {{ schedule.city }}

@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404, render
+from django.db.models import F
 from django.http import HttpResponse
 from django.views.generic import (
     ListView,
@@ -16,6 +17,7 @@ from django.contrib import messages
 from django.urls import reverse_lazy, reverse
 from django.shortcuts import redirect
 from django.core.exceptions import ValidationError
+from django.core.validators import URLValidator
 from .models import Plan, Category, Trip, Schedule
 from django.views import View
 from .forms import PlanForm, myTripCreateForm, myScheduleCreateForm
@@ -287,7 +289,7 @@ class MyScheduleByTripListView(LoginRequiredMixin, UserPassesTestMixin, ListView
         trip = get_object_or_404(Trip, id=self.kwargs.get('trip_id'))
         schedules = Schedule.objects.filter(
             trip=trip,
-        )
+        ).order_by('scheduled_date', F('scheduled_time').asc(nulls_last=True)) # To ensure scheduled_time NULL values come last
         return schedules
 
     def get_context_data(self, **kwargs):
@@ -325,18 +327,18 @@ class MyScheduleByTripCreateView(LoginRequiredMixin, CreateView):
         return context
 
     def form_valid(self, form):
+       
         trip = get_object_or_404(Trip, id=self.kwargs.get('trip_id'))
         form.instance.trip = trip
         form.instance.traveler = self.request.user
-        if form.instance.date_visited < trip.date_fm:
+        if form.instance.scheduled_date < trip.date_fm:
             messages.error(self.request, f"The date visited must be on or after the trip's frist date.: {trip.date_fm.strftime('%Y-%m-%d')}.")
             return redirect(reverse("trips-mySchedule-by-myTrip", kwargs={"trip_id": self.kwargs.get('trip_id')}))
-        if form.instance.date_visited > trip.date_to:
+        if form.instance.scheduled_date > trip.date_to:
             messages.error(self.request, f"The date visited must be on or before the trip's last date.: {trip.date_to.strftime('%Y-%m-%d')}.")
             return redirect(reverse("trips-mySchedule-by-myTrip", kwargs={"trip_id": self.kwargs.get('trip_id')}))
-  
         return super().form_valid(form)
-    
+
     def get_success_url(self):
         """Dynamically generate the success URL with user_id."""
         trip_id = self.kwargs.get('trip_id')
@@ -376,10 +378,10 @@ class MyScheduleByTripUpdateView(LoginRequiredMixin, UserPassesTestMixin, Update
         trip = get_object_or_404(Trip, id=self.kwargs.get('trip_id'))
         form.instance.trip = trip
         form.instance.traveler = self.request.user
-        if form.instance.date_visited < trip.date_fm:
+        if form.instance.scheduled_date < trip.date_fm:
             messages.error(self.request, f"The date visited must be on or after the trip's frist date.: {trip.date_fm.strftime('%Y-%m-%d')}.")
             return redirect(reverse("trips-mySchedule-by-myTrip", kwargs={"trip_id": self.kwargs.get('trip_id')}))
-        if form.instance.date_visited > trip.date_to:
+        if form.instance.scheduled_date > trip.date_to:
             messages.error(self.request, f"The date visited must be on or before the trip's last date.: {trip.date_to.strftime('%Y-%m-%d')}.")
             return redirect(reverse("trips-mySchedule-by-myTrip", kwargs={"trip_id": self.kwargs.get('trip_id')}))
         return super().form_valid(form)

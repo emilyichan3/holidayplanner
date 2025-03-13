@@ -25,7 +25,7 @@ class Category(models.Model):
 class Plan(models.Model):
     plan_name = models.CharField(max_length=200)
     note = models.TextField(blank=True)
-    link = models.CharField(max_length=2000, null=True, blank=True)
+    link = models.URLField(null=True, blank=True)
     country = CountryField(blank_label="(select country)", null=True, blank=True)
     city = models.CharField(max_length=80,blank=True)
     date_created = models.DateTimeField(default=timezone.now)
@@ -52,7 +52,8 @@ class Schedule(models.Model):
     destination = models.CharField(max_length=200)
     country = CountryField(blank_label="(select country)", null=True, blank=True)
     city = models.CharField(max_length=80,blank=True)
-    date_visited = models.DateTimeField(default=timezone.now)
+    scheduled_date = models.DateTimeField(default=timezone.now)
+    scheduled_time = models.TimeField(null=True, blank=True)
     link = models.CharField(max_length=2000, null=True,  blank=True)
     note = models.TextField(blank=True)
     date_created = models.DateTimeField(default=timezone.now)
