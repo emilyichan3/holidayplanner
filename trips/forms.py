@@ -75,9 +75,10 @@ class myScheduleCreateForm(forms.ModelForm):
     link = forms.URLField(
         label='Enter a URL',
         validators=[URLValidator()],
-        widget=forms.TextInput(attrs={'placeholder': 'https://example.com'})
+        widget=forms.TextInput(attrs={'placeholder': 'https://example.com'}),
+        required=False  # Make the field optional
     )
-    
+
     class Meta:
         model = Schedule
         fields = ['destination', 

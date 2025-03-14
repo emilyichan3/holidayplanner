@@ -31,9 +31,14 @@
       {% for schedule in schedules %}
         <tr>
           <td>
-            <div class="media">
-              <img class="rounded-circle account-img" src="{{ schedule.get_image_url }}">
-          </div>
+            {% if schedule.get_image_url %}
+              <td class="d-none d-md-table-cell"><img class="menu-img" 
+                src="{{ schedule.get_image_url }}"
+                alt="{{ schedule.destination }}">
+              </td>
+            {% else %}
+              <td>No image available</td>
+            {% endif %}
           <td>{{ schedule.scheduled_date|date:'d/m/Y' }}</td>
           <td>{{ schedule.scheduled_time|time:"h A" }}</td>
           <td>

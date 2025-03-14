@@ -45,7 +45,7 @@ class Trip(models.Model):
     traveler = models.ForeignKey(User, on_delete=models.CASCADE, related_name='trip')
     
     def __str__(self):
-        return f'{ self.trip_name } is in { self.country }'
+        return f'{ self.trip_name }'
 
 
 class Schedule(models.Model):
@@ -72,4 +72,4 @@ class Schedule(models.Model):
                 self.image.name, width=300, height=300, crop="lfill"
             )[0]
         else: # Fallback to static default image
-            return static('trip/trip_default.jpg')
+            return static('trips/trip_default.png')
