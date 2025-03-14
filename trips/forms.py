@@ -1,17 +1,21 @@
 from django import forms
 from django.contrib.auth import get_user_model
-# from crispy_forms.helper import FormHelper
-# from crispy_forms.layout import Submit
 from .models import Plan, Category, Trip, Schedule
 from datetime import date, timedelta, datetime
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import URLValidator
 
 class PlanForm(forms.ModelForm):
     categories = forms.ModelMultipleChoiceField(
         queryset=Category.objects.none(),  # Set dynamically in __init__
         widget=forms.CheckboxSelectMultiple,  # This allows users to select multiple categories
         required=True
+    )
+    link = forms.URLField(
+        label='Enter a URL',
+        validators=[URLValidator()],
+        widget=forms.TextInput(attrs={'placeholder': 'https://example.com'})
     )
 
     def __init__(self, *args, **kwargs):
@@ -68,6 +72,11 @@ class myScheduleCreateForm(forms.ModelForm):
     scheduled_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     scheduled_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
     image = forms.ImageField(required=False, widget=forms.ClearableFileInput(attrs={'clearable': 'true'}))
+    link = forms.URLField(
+        label='Enter a URL',
+        validators=[URLValidator()],
+        widget=forms.TextInput(attrs={'placeholder': 'https://example.com'})
+    )
     
     class Meta:
         model = Schedule

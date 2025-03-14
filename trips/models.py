@@ -54,7 +54,7 @@ class Schedule(models.Model):
     city = models.CharField(max_length=80,blank=True)
     scheduled_date = models.DateTimeField(default=timezone.now)
     scheduled_time = models.TimeField(null=True, blank=True)
-    link = models.CharField(max_length=2000, null=True,  blank=True)
+    link = models.URLField(null=True, blank=True)
     note = models.TextField(blank=True)
     date_created = models.DateTimeField(default=timezone.now)
     image = models.ImageField(upload_to='trip_pics', storage=MediaCloudinaryStorage(), null=True, blank=True)
