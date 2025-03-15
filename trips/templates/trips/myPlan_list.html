@@ -1,5 +1,12 @@
 {% extends "trips/base.html" %}
 {% block content %}
+<form method="GET">
+  <input type="text" name="q_country" placeholder="Search country..." value="{{ request.GET.q_country }}">
+  <input type="text" name="q_city" placeholder="Search city..." value="{{ request.GET.q_city }}">
+  <input type="text" name="q_plan_name" placeholder="Search plan name..." value="{{ request.GET.q_plan_name }}">
+  <input type="text" name="q_category" placeholder="Search category..." value="{{ request.GET.q_category }}">
+  <button type="submit">Search</button>
+</form>
 <button class="btn btn-outline-info">
   <a
   href="{% url 'trips-myPlan-new' %}"
@@ -44,6 +51,16 @@
               </ul>
             </td>
             <td>
+              <div class="d-flex custom-gap">
+                <button class="btn btn-outline-info">
+                <a
+                  href="{% url 'trips-myPlan-Search' user_id=plan.planner.id %}"
+                >
+                  Add to My Trip
+                </a>
+              </button>
+              </div>
+            </div>              
               <div class="d-flex custom-gap">
                 <button class="btn btn-outline-info">
                 <a

@@ -11,7 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin, 
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.utils import timezone
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from django.contrib.auth.models import User #The user model will be the sender
 from django.contrib import messages
 from django.urls import reverse_lazy, reverse
@@ -28,8 +28,7 @@ User = get_user_model()
 
 class home(TemplateView):
     template_name = 'trips/home.html' # we can define the template either here or in the urls
-
-
+    
 
 class MyCategoryListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Category
@@ -134,6 +133,20 @@ class MyPlanListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         plans = Plan.objects.filter(
             planner=user,
         ).order_by('country')
+
+        q_country = self.request.GET.get("q_country")
+        q_city = self.request.GET.get("q_city")
+        q_plan_name = self.request.GET.get("q_plan_name")
+        q_category = self.request.GET.get("q_category")
+        
+        if q_country:
+            plans = plans.filter(country__icontains=q_country)
+        if q_city:
+            plans = plans.filter(city__icontains=q_city)            
+        if q_plan_name:
+            plans = plans.filter(country__icontains=q_plan_name)
+        if q_category:
+            plans = plans.filter(categories__category_name__icontains=q_category)
         return plans
 
     def test_func(self):
@@ -210,6 +223,39 @@ class MyPlanDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         plan = self.get_object()
         return self.request.user == plan.planner 
 
+
+class MyPlanSearchListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = Trip
+    template_name = 'trips/myPlan_trip_seach.html' # we can define the template either here or in the urls
+    context_object_name = 'trips'
+
+    def get_queryset(self):
+        formatted_today = timezone.now().date()
+        user = get_object_or_404(User, id=self.kwargs.get('user_id'))
+        trips = Trip.objects.filter(
+            traveler=user,
+            date_to__gte=formatted_today, 
+        ).order_by('date_fm')
+        q_trip = self.request.GET.get("q_trip")
+        q_date = self.request.GET.get("q_date")
+
+        if q_trip:
+            trips = trips.filter(trip_name__icontains=q_trip)
+
+        if q_date:
+            try:
+                q_date = datetime.strptime(q_date, "%Y-%m-%d").date()  # Convert string to date
+                trips = trips.filter(
+                date_fm__lte=q_date, 
+                date_to__gte=q_date 
+            )
+            except ValueError:
+                q_date = None  # Handle invalid date inputs
+
+        return trips
+
+    def test_func(self):
+        return self.request.user.id == self.kwargs.get('user_id')
 
 class MyTripListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Trip

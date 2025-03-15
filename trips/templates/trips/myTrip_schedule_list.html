@@ -19,7 +19,7 @@
   <table class="table table-striped table-hover">
     <thead>
       <tr>
-        <th scope="col"></th>
+        <th scope="col" class="d-none d-md-table-cell">Image</th>
         <th scope="col">Date</th>
         <th scope="col">Time</th>
         <th scope="col">Where</th>
@@ -30,15 +30,14 @@
     <tbody>
       {% for schedule in schedules %}
         <tr>
-          <td>
-            {% if schedule.get_image_url %}
-              <td class="d-none d-md-table-cell"><img class="menu-img" 
-                src="{{ schedule.get_image_url }}"
-                alt="{{ schedule.destination }}">
-              </td>
-            {% else %}
-              <td>No image available</td>
-            {% endif %}
+          {% if schedule.get_image_url %}
+            <td class="d-none d-md-table-cell"><img class="schedule-img" 
+              src="{{ schedule.get_image_url }}"
+              alt="{{ schedule.destination }}">
+            </td>
+          {% else %}
+            <td>No image available</td>
+          {% endif %}
           <td>{{ schedule.scheduled_date|date:'d/m/Y' }}</td>
           <td>{{ schedule.scheduled_time|time:"h A" }}</td>
           <td>

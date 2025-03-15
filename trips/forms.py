@@ -70,7 +70,7 @@ class myScheduleCreateForm(forms.ModelForm):
     destination = forms.CharField(max_length=200)
     city = forms.CharField(max_length=80, required=False)
     scheduled_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    scheduled_time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
+    scheduled_time = forms.TimeField(required=False, widget=forms.TimeInput(attrs={'type': 'time'}))
     image = forms.ImageField(required=False, widget=forms.ClearableFileInput(attrs={'clearable': 'true'}))
     link = forms.URLField(
         label='Enter a URL',
