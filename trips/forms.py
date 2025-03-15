@@ -95,16 +95,44 @@ class myScheduleCreateForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         if not self.instance.pk:  # Only set default for new forms, not existing ones
-            self.fields['scheduled_date'].initial = date.today()
+            self.fields['scheduled_date'].initial = trip.date_fm
             # self.fields['scheduled_time'].initial = datetime.now().replace(minute=0, second=0, microsecond=0).time()
+      
+class myPlanConvertCreateForm(forms.ModelForm):
+    destination = forms.CharField(max_length=200)
+    city = forms.CharField(max_length=80, required=False)
+    scheduled_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    scheduled_time = forms.TimeField(required=False, widget=forms.TimeInput(attrs={'type': 'time'}))
+    image = forms.ImageField(required=False, widget=forms.ClearableFileInput(attrs={'clearable': 'true'}))
+    link = forms.URLField(
+        label='Enter a URL',
+        validators=[URLValidator()],
+        widget=forms.TextInput(attrs={'placeholder': 'https://example.com'}),
+        required=False  # Make the field optional
+    )
 
+    class Meta:
+        model = Schedule
+        fields = ['destination', 
+                'scheduled_date',
+                'scheduled_time',
+                'link',
+                'country',
+                'city',
+                'image',
+                'attachement']
+        
+    def __init__(self, *args, **kwargs):
+        trip = kwargs.pop('trip', None)  # Extract trip instance
+        plan = kwargs.pop('plan', None)  # Extract trip instance
+        super().__init__(*args, **kwargs)
 
-        # if trip:
-        #     self.fields['trip_name'].initial = trip.trip_name  
-        #     self.fields['date_fm'].initial = trip.date_fm 
-        #     self.fields['date_to'].initial = trip.date_to 
-            
-        #     # Make fields read-only if they shouldn't be changed
-        #     self.fields['trip_name'].widget.attrs['readonly'] = True
-        #     self.fields['date_fm'].widget.attrs['readonly'] = True
-        #     self.fields['date_to'].widget.attrs['readonly'] = True
+        if not self.instance.pk:  # Only set default for new forms, not existing ones
+            self.fields['scheduled_date'].initial = trip.date_fm
+
+        if plan:
+            self.fields['destination'].initial = plan.plan_name  
+            self.fields['country'].initial = plan.country 
+            self.fields['city'].initial = plan.city 
+            self.fields['link'].initial = plan.link  
+      

@@ -20,7 +20,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
 from .models import Plan, Category, Trip, Schedule
 from django.views import View
-from .forms import PlanForm, myTripCreateForm, myScheduleCreateForm
+from .forms import PlanForm, myTripCreateForm, myScheduleCreateForm, myPlanConvertCreateForm
 from django.views.generic import TemplateView
 from django.core.paginator import Paginator
 
@@ -28,7 +28,7 @@ User = get_user_model()
 
 class home(TemplateView):
     template_name = 'trips/home.html' # we can define the template either here or in the urls
-    
+
 
 class MyCategoryListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Category
@@ -231,9 +231,9 @@ class MyPlanSearchListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def get_queryset(self):
         formatted_today = timezone.now().date()
-        user = get_object_or_404(User, id=self.kwargs.get('user_id'))
+        plan = get_object_or_404(Plan, id=self.kwargs.get('pk'))
         trips = Trip.objects.filter(
-            traveler=user,
+            traveler=plan.planner,
             date_to__gte=formatted_today, 
         ).order_by('date_fm')
         q_trip = self.request.GET.get("q_trip")
@@ -254,8 +254,27 @@ class MyPlanSearchListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
         return trips
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        plan = get_object_or_404(Plan, id=self.kwargs.get('pk'))
+        context['plan'] = plan
+        return context
+
+    def get_form_kwargs(self):
+        """Pass the logged-in user to the form dynamically."""
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user  # Ensure user is added
+        return kwargs
+    
     def test_func(self):
-        return self.request.user.id == self.kwargs.get('user_id')
+        print(f"get_form_kwargs: {self.kwargs.get('pk')} ")  # Debugging output
+        plan = get_object_or_404(Plan, id=self.kwargs.get('pk'))  # Ensure self.trip exists
+        return self.request.user == plan.planner 
+
+    # def form_valid(self, form):
+    #     plan = get_object_or_404(Plan, id=self.kwargs.get('plan_id'))
+    #     form.instance.plan = plan
+    #     return super().form_valid(form)
 
 class MyTripListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Trip
@@ -368,12 +387,10 @@ class MyScheduleByTripCreateView(LoginRequiredMixin, CreateView):
         # Fetch trip only once
         if not hasattr(self, 'trip'):
             self.trip = get_object_or_404(Trip, id=trip_id)
-
         context['trip'] = self.trip
         return context
 
     def form_valid(self, form):
-       
         trip = get_object_or_404(Trip, id=self.kwargs.get('trip_id'))
         form.instance.trip = trip
         form.instance.traveler = self.request.user
@@ -482,6 +499,49 @@ class MyScheduleSearchByMyPlanListView(LoginRequiredMixin, UserPassesTestMixin, 
     def test_func(self):
         return self.request.user.id == self.kwargs.get('user_id')
 
+
+class MyPlanConvertCreateView(LoginRequiredMixin, CreateView):
+    model = Schedule
+    template_name = 'trips/myTrip_schedule_form.html'
+    form_class = myPlanConvertCreateForm
+    success_url = "/"
+
+    def get_form_kwargs(self):
+        # Pass instances to form
+        kwargs = super().get_form_kwargs()
+        trip = get_object_or_404(Trip, id=self.kwargs.get('trip_id'))
+        plan = get_object_or_404(Plan, id=self.kwargs.get('plan_id'))
+        kwargs['trip'] = trip 
+        kwargs['plan'] = plan 
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        trip_id = self.kwargs.get('trip_id')
+        # Fetch trip only once
+        if not hasattr(self, 'trip'):
+            self.trip = get_object_or_404(Trip, id=trip_id)
+        context['trip'] = self.trip
+        return context
+
+    def form_valid(self, form):
+        trip = get_object_or_404(Trip, id=self.kwargs.get('trip_id'))
+        plan = get_object_or_404(Plan, id=self.kwargs.get('plan_id'))
+        form.instance.trip = trip
+        form.instance.traveler = self.request.user
+        form.instance.plan = plan
+        if form.instance.scheduled_date < trip.date_fm:
+            messages.error(self.request, f"The date visited must be on or after the trip's frist date.: {trip.date_fm.strftime('%Y-%m-%d')}.")
+            return redirect(reverse("trips-mySchedule-by-myTrip", kwargs={"trip_id": self.kwargs.get('trip_id')}))
+        if form.instance.scheduled_date > trip.date_to:
+            messages.error(self.request, f"The date visited must be on or before the trip's last date.: {trip.date_to.strftime('%Y-%m-%d')}.")
+            return redirect(reverse("trips-mySchedule-by-myTrip", kwargs={"trip_id": self.kwargs.get('trip_id')}))
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        """Dynamically generate the success URL with user_id."""
+        trip_id = self.kwargs.get('trip_id')
+        return reverse("trips-mySchedule-by-myTrip", kwargs={"trip_id": trip_id})
 
 class CalculatorView(TemplateView):
     template_name = 'trips/calculator.html' # we can define the template either here or in the urls

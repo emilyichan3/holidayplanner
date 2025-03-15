@@ -1,8 +1,9 @@
 {% extends "trips/base.html" %}
 {% block content %}
+<h1>Assign {{ plan.plan_name }} to</h1>
 <button class="btn btn-outline-info">
   <a
-  href=""
+  href="{% url 'trips-myPlan' user_id=user.id %}"
 >
   Go back 
   </a>
@@ -27,6 +28,13 @@
         {% for trip in trips %}
           <tr>
             <td>
+              <button class="btn btn-outline-info">
+                <a
+                href="{% url 'trips-myPlan-Convert-new' trip_id=trip.id plan_id=plan.id%}"
+              >
+                Add Schedule
+                </a>
+              </button>           
             </td>
             <td>{{ trip.trip_name }}</td>
             <td>{{ trip.date_fm|date:'d/m/Y' }} -  {{ trip.date_to|date:'d/m/Y' }}</td>

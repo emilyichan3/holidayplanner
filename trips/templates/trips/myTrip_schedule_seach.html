@@ -32,7 +32,7 @@
         {% for plan in plans %}
           <tr>
             <td>
-              <div class="d-flex custom-gap">
+              {% comment %} <div class="d-flex custom-gap">
                 {% if plan.id in added_plans %}
                   <button class="btn btn-outline-info" disabled>Added</button>
                 {% else %}
@@ -41,7 +41,14 @@
                       <button type="submit" class="btn btn-outline-info">Select</button>
                   </form>
                 {% endif %}
-              </div>
+              </div> {% endcomment %}
+              <button class="btn btn-outline-info">
+                <a
+                href="{% url 'trips-myPlan-Convert-new' trip_id=trip.id plan_id=plan.id%}"
+              >
+                Add Schedule
+                </a>
+              </button>   
             </td>
             <td>
               {% if plan.link %}
