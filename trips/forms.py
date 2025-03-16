@@ -13,6 +13,7 @@ class PlanForm(forms.ModelForm):
         required=True
     )
     link = forms.URLField(
+        required=False,
         label='Enter a URL',
         validators=[URLValidator()],
         widget=forms.TextInput(attrs={'placeholder': 'https://example.com'})

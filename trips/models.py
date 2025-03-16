@@ -19,7 +19,7 @@ class Category(models.Model):
         return f'category: { self.category_name }'
 
     def get_absolute_url(self):
-        return reverse('trips-myCategory', kwargs={'user_id': self.marker.id})
+        return reverse('trips-myCategory', kwargs={'username': self.marker.username})
         
 
 class Plan(models.Model):

@@ -10,7 +10,7 @@
 </button>
 <button class="btn btn-outline-info">
   <a
-  href="{% url 'trips-mySchedule-Search' trip_id=trip.id user_id=trip.traveler.id %}"
+  href="{% url 'trips-mySchedule-Search' trip_id=trip.id username=trip.traveler.username %}"
 >
   Convert from MyPlan
   </a>

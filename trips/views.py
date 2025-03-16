@@ -32,7 +32,7 @@ class MyCategoryListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     context_object_name = 'categories'
 
     def get_queryset(self):
-        user = get_object_or_404(User, id=self.kwargs.get('user_id'))
+        user = get_object_or_404(User, username=self.kwargs.get('username'))
         categories = Category.objects.filter(
             marker=user,
         )
@@ -44,7 +44,7 @@ class MyCategoryListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return context
 
     def test_func(self):
-        return self.request.user.id == self.kwargs.get('user_id')
+        return self.request.user.username == self.kwargs.get('username')
         
 
 class MyCategoryCreateView(LoginRequiredMixin, CreateView):
@@ -58,9 +58,8 @@ class MyCategoryCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        """Dynamically generate the success URL with user_id."""
-        user_id = self.request.user.id
-        return reverse("trips-myCategory", kwargs={"user_id": user_id})
+        username = self.request.user.username
+        return reverse("trips-myCategory", kwargs={"username": username})
 
 
 class MyCategoryUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -82,9 +81,9 @@ class MyCategoryDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     template_name = 'trips/myCategory_confirm_delete.html'
 
     def get_success_url(self):
-        """Dynamically generate the success URL with user_id."""
-        user_id = self.request.user.id
-        return reverse("trips-myCategory", kwargs={"user_id": user_id})
+        """Dynamically generate the success URL with username."""
+        username = self.request.user.username
+        return reverse("trips-myCategory", kwargs={"username": username})
     
     def test_func(self):
         category = self.get_object()
@@ -95,7 +94,7 @@ class MyCategoryDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
         if category.plans.all().exists():  
             messages.error(self.request, "This category cannot be deleted because it has linked plans.")
-            return redirect(reverse("trips-myCategory", kwargs={"user_id": category.marker.id}))
+            return redirect(reverse("trips-myCategory", kwargs={"username": category.marker.username}))
         return super().form_valid(form)  # Proceed with deletion if no menus exist
 
 
@@ -125,7 +124,7 @@ class MyPlanListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     context_object_name = 'plans'
 
     def get_queryset(self):
-        user = get_object_or_404(User, id=self.kwargs.get('user_id'))
+        user = get_object_or_404(User, username=self.kwargs.get('username'))
         plans = Plan.objects.filter(
             planner=user,
         ).order_by('country')
@@ -146,27 +145,32 @@ class MyPlanListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return plans
 
     def test_func(self):
-        return self.request.user.id == self.kwargs.get('user_id')
+        return self.request.user.username == self.kwargs.get('username')
 
 
 class MyPlanCreateView(LoginRequiredMixin, CreateView):
     model = Plan
     template_name = 'trips/myPlan_form.html'
     form_class = PlanForm
- 
+
+    def dispatch(self, request, *args, **kwargs):
+        print(f"User authenticated: {request.user.is_authenticated}")
+        return super().dispatch(request, *args, **kwargs)
+
     def get_success_url(self):
-        """Dynamically generate the success URL with user_id."""
-        user_id = self.request.user.id
-        return reverse("trips-myPlan", kwargs={"user_id": user_id})
+        """Dynamically generate the success URL with username."""
+        username = self.request.user.username
+        return reverse("trips-myPlan", kwargs={"username": username})
 
     def get_form_kwargs(self):
         """Pass the logged-in user to the form dynamically."""
         kwargs = super().get_form_kwargs()
+        print(f"User authenticated: {self.request.user.is_authenticated}")  # Debug auth status
         kwargs['user'] = self.request.user  # Ensure user is added
-        print(f"get_form_kwargs: {kwargs}")  # Debugging output
         return kwargs
 
     def form_valid(self, form):
+        print(f"User authenticated: {self.request.user.is_authenticated}")  # Debug auth status
         # Automatically assign the logged-in user as the planner when the form is valid
         form.instance.planner = self.request.user
         return super().form_valid(form)
@@ -174,7 +178,7 @@ class MyPlanCreateView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         # Adding categories and plans to the context
         context = super().get_context_data(**kwargs)
-        user = get_object_or_404(User, id= self.request.user.id)
+        user = get_object_or_404(User, username= self.request.user.username)
         categories = Category.objects.filter(
             marker=user,
         )
@@ -190,9 +194,9 @@ class MyPlanUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     form_class = PlanForm
 
     def get_success_url(self):
-        """Dynamically generate the success URL with user_id."""
-        user_id = self.request.user.id
-        return reverse("trips-myPlan", kwargs={"user_id": user_id})
+        """Dynamically generate the success URL with username."""
+        username = self.request.user.username
+        return reverse("trips-myPlan", kwargs={"username": username})
     
     def get_form_kwargs(self):
         """Pass the logged-in user to the form dynamically."""
@@ -211,9 +215,9 @@ class MyPlanDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     template_name = 'trips/myPlan_confirm_delete.html'
 
     def get_success_url(self):
-        """Dynamically generate the success URL with user_id."""
-        user_id = self.request.user.id
-        return reverse("trips-myPlan", kwargs={"user_id": user_id})
+        """Dynamically generate the success URL with username."""
+        username = self.request.user.username
+        return reverse("trips-myPlan", kwargs={"username": username})
 
     def test_func(self):
         plan = self.get_object()
@@ -267,10 +271,6 @@ class MyPlanSearchListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         plan = get_object_or_404(Plan, id=self.kwargs.get('pk'))  # Ensure self.trip exists
         return self.request.user == plan.planner 
 
-    # def form_valid(self, form):
-    #     plan = get_object_or_404(Plan, id=self.kwargs.get('plan_id'))
-    #     form.instance.plan = plan
-    #     return super().form_valid(form)
 
 class MyTripListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Trip
@@ -278,14 +278,14 @@ class MyTripListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     context_object_name = 'trips'
 
     def get_queryset(self):
-        user = get_object_or_404(User, id=self.kwargs.get('user_id'))
+        user = get_object_or_404(User, username=self.kwargs.get('username'))
         trips = Trip.objects.filter(
             traveler=user,
         )
         return trips
 
     def test_func(self):
-        return self.request.user.id == self.kwargs.get('user_id')
+        return self.request.user.username == self.kwargs.get('username')
 
 
 class MyTripCreateView(LoginRequiredMixin, CreateView):
@@ -299,9 +299,9 @@ class MyTripCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        """Dynamically generate the success URL with user_id."""
-        user_id = self.request.user.id
-        return reverse("trips-myTrip", kwargs={"user_id": user_id})
+        """Dynamically generate the success URL with username."""
+        username = self.request.user.username
+        return reverse("trips-myTrip", kwargs={"username": username})
 
 
 class MyTripUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -310,9 +310,9 @@ class MyTripUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     form_class = myTripCreateForm
 
     def get_success_url(self):
-        """Dynamically generate the success URL with user_id."""
-        user_id = self.request.user.id
-        return reverse("trips-myTrip", kwargs={"user_id": user_id})
+        """Dynamically generate the success URL with username."""
+        username = self.request.user.username
+        return reverse("trips-myTrip", kwargs={"username": username})
     
     def test_func(self):
         trip = self.get_object()
@@ -324,9 +324,9 @@ class MyTripDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     template_name = 'trips/myTrip_confirm_delete.html'
 
     def get_success_url(self):
-        """Dynamically generate the success URL with user_id."""
-        user_id = self.request.user.id
-        return reverse("trips-myTrip", kwargs={"user_id": user_id})
+        """Dynamically generate the success URL with username."""
+        username = self.request.user.username
+        return reverse("trips-myTrip", kwargs={"username": username})
 
     def test_func(self):
         trip = self.get_object()
@@ -337,7 +337,7 @@ class MyTripDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
         if trip.schedule.all().exists():  
             messages.error(self.request, "This trip cannot be deleted because it has linked schedules.")
-            return redirect(reverse("trips-myTrip", kwargs={"user_id": trip.traveler.id}))
+            return redirect(reverse("trips-myTrip", kwargs={"username": trip.traveler.username}))
         return super().form_valid(form)  # Proceed with deletion if no menus exist
 
 
@@ -399,7 +399,7 @@ class MyScheduleByTripCreateView(LoginRequiredMixin, UserPassesTestMixin, Create
         return super().form_valid(form)
 
     def get_success_url(self):
-        """Dynamically generate the success URL with user_id."""
+        """Dynamically generate the success URL with username."""
         trip_id = self.kwargs.get('trip_id')
         return reverse("trips-mySchedule-by-myTrip", kwargs={"trip_id": trip_id})
 
@@ -472,7 +472,7 @@ class MyScheduleSearchByMyPlanListView(LoginRequiredMixin, UserPassesTestMixin, 
     context_object_name = 'plans'
 
     def get_queryset(self):
-        user = get_object_or_404(User, id=self.kwargs.get('user_id'))
+        user = get_object_or_404(User, username=self.kwargs.get('username'))
         plans = Plan.objects.filter(
             planner=user,
         ).order_by('country')
@@ -501,7 +501,7 @@ class MyScheduleSearchByMyPlanListView(LoginRequiredMixin, UserPassesTestMixin, 
 
     def test_func(self):
         trip = get_object_or_404(Trip, id=self.kwargs.get('trip_id'))  # Ensure self.trip exists
-        return self.request.user == trip.traveler and self.request.user.id == self.kwargs.get('user_id')
+        return self.request.user == trip.traveler and self.request.user.username == self.kwargs.get('username')
 
 
 class MyPlanConvertCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
@@ -543,7 +543,7 @@ class MyPlanConvertCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateVie
         return super().form_valid(form)
 
     def get_success_url(self):
-        """Dynamically generate the success URL with user_id."""
+        """Dynamically generate the success URL with username."""
         trip_id = self.kwargs.get('trip_id')
         return reverse("trips-mySchedule-by-myTrip", kwargs={"trip_id": trip_id})
 

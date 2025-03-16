@@ -11,7 +11,7 @@
 </div>
     {% for post in posts %}
         <article class="media content-section">
-            <img class="rounded-circle article-img" src="{{ user.get_image_url }}">
+            <img class="rounded-circle article-img" src="{{ post.author.get_image_url }}">
             <div class="media-body">
               <div class="article-metadata">
                 <a class="mr-2" href="{% url 'user-posts' post.author.email %}">

@@ -14,16 +14,17 @@ User = get_user_model()
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = Profile
-        fields = ("email","first_name", "last_name",'image','dob','country')
+        fields = ("username", "email","first_name", "last_name",'image','dob','country')
 
 
 class CustomUserChangeForm(UserChangeForm):
     class Meta:
         model = Profile
-        fields = ("email","first_name", "last_name",'image','dob','country')
+        fields = ("username", "email","first_name", "last_name",'image','dob','country')
 
 
 class UserRegisterForm(UserCreationForm):
+    username = forms.CharField(max_length=150)
     email = forms.EmailField()
     first_name = forms.CharField(max_length=150)
     last_name = forms.CharField(max_length=150)
@@ -41,7 +42,7 @@ class UserRegisterForm(UserCreationForm):
 
     class Meta:
         model = Profile
-        fields = ['email', "first_name", "last_name", 'password1', 'password2', 'dob','country']
+        fields = ['username', 'email', "first_name", "last_name", 'password1', 'password2', 'dob','country']
 
     def clean_dob(self):
         dob = self.cleaned_data.get("dob")
