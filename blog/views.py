@@ -64,5 +64,5 @@ class UserPostListView(ListView):
     paginate_by = 5
 
     def get_queryset(self):
-        user = get_object_or_404(User, email=self.kwargs.get('email'))
+        user = get_object_or_404(User, username=self.kwargs.get('username'))
         return user.posts.order_by('-date_posted')

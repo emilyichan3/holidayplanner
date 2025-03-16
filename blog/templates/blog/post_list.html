@@ -1,20 +1,22 @@
 {% extends "trips/base.html" %}
 {% block content %}
 <div>
-  <button class="btn btn-outline-info">
-    <a
-    href="{% url 'post-new' %}"
-  >
-    New Post
-  </a>
-  </button>
+  {% if user.is_authenticated %}
+    <button class="btn btn-outline-info">
+      <a
+      href="{% url 'post-new' %}"
+    >
+      New Post
+    </a>
+    </button>
+  {% endif %}
 </div>
     {% for post in posts %}
         <article class="media content-section">
             <img class="rounded-circle article-img" src="{{ post.author.get_image_url }}">
             <div class="media-body">
               <div class="article-metadata">
-                <a class="mr-2" href="{% url 'user-posts' post.author.email %}">
+                <a class="mr-2" href="{% url 'user-posts' post.author.username %}">
                   {{ post.author.first_name }} {{ post.author.last_name }} 
                 </a>
                 <small class="text-muted">From {{ post.author.country.name }}</small>

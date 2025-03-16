@@ -495,8 +495,8 @@ class MyScheduleSearchByMyPlanListView(LoginRequiredMixin, UserPassesTestMixin, 
         context = super().get_context_data(**kwargs)
         trip = get_object_or_404(Trip, id=self.kwargs.get('trip_id'))
         context['trip'] = trip
-        added_plans = Schedule.objects.filter(trip=trip).values_list('plan_id', flat=True)
-        context['added_plans'] = added_plans
+        # added_plans = Schedule.objects.filter(trip=trip).values_list('plan_id', flat=True)
+        # context['added_plans'] = added_plans
         return context
 
     def test_func(self):
