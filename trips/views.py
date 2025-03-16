@@ -368,7 +368,7 @@ class MyScheduleByTripListView(LoginRequiredMixin, UserPassesTestMixin, ListView
         return self.request.user == trip.traveler 
 
 
-class MyScheduleByTripCreateView(LoginRequiredMixin, CreateView):
+class MyScheduleByTripCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Schedule
     template_name = 'trips/myTrip_schedule_form.html'
     form_class = myScheduleCreateForm
@@ -407,6 +407,10 @@ class MyScheduleByTripCreateView(LoginRequiredMixin, CreateView):
         trip_id = self.kwargs.get('trip_id')
         return reverse("trips-mySchedule-by-myTrip", kwargs={"trip_id": trip_id})
 
+    def test_func(self):
+        trip = get_object_or_404(Trip, id=self.kwargs.get('trip_id'))
+        return self.request.user == trip.traveler  # Check if the logged-in user is the traveler
+
 
 class MyScheduleByTripUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Schedule
@@ -435,7 +439,9 @@ class MyScheduleByTripUpdateView(LoginRequiredMixin, UserPassesTestMixin, Update
     
     def test_func(self):
         schedule = self.get_object()
-        return self.request.user == schedule.traveler 
+        trip = get_object_or_404(Trip, id=self.kwargs.get('trip_id'))  # Ensure self.trip exists
+        return self.request.user == trip.traveler and self.request.user == schedule.traveler
+
 
     def form_valid(self, form):
         trip = get_object_or_404(Trip, id=self.kwargs.get('trip_id'))
@@ -460,7 +466,8 @@ class MyScheduleByTripDeleteView(LoginRequiredMixin, UserPassesTestMixin, Delete
     
     def test_func(self):
         schedule = self.get_object()
-        return self.request.user == schedule.traveler
+        trip = get_object_or_404(Trip, id=self.kwargs.get('trip_id'))  # Ensure self.trip exists
+        return self.request.user == trip.traveler and self.request.user == schedule.traveler
     
 
 class MyScheduleSearchByMyPlanListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
@@ -497,10 +504,11 @@ class MyScheduleSearchByMyPlanListView(LoginRequiredMixin, UserPassesTestMixin, 
         return context
 
     def test_func(self):
-        return self.request.user.id == self.kwargs.get('user_id')
+        trip = get_object_or_404(Trip, id=self.kwargs.get('trip_id'))  # Ensure self.trip exists
+        return self.request.user == trip.traveler and self.request.user.id == self.kwargs.get('user_id')
 
 
-class MyPlanConvertCreateView(LoginRequiredMixin, CreateView):
+class MyPlanConvertCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Schedule
     template_name = 'trips/myTrip_schedule_form.html'
     form_class = myPlanConvertCreateForm
@@ -542,6 +550,11 @@ class MyPlanConvertCreateView(LoginRequiredMixin, CreateView):
         """Dynamically generate the success URL with user_id."""
         trip_id = self.kwargs.get('trip_id')
         return reverse("trips-mySchedule-by-myTrip", kwargs={"trip_id": trip_id})
+
+    def test_func(self):
+        trip = get_object_or_404(Trip, id=self.kwargs.get('trip_id'))  
+        plan = get_object_or_404(Plan, id=self.kwargs.get('plan_id'))  
+        return self.request.user == trip.traveler and self.request.user == plan.planner
 
 class CalculatorView(TemplateView):
     template_name = 'trips/calculator.html' # we can define the template either here or in the urls
