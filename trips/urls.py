@@ -1,6 +1,5 @@
 from django.urls import path
 from .views import (
-    home,
     MyCategoryListView,
     MyCategoryCreateView,
     MyCategoryUpdateView,
@@ -27,7 +26,6 @@ from .views import (
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
-    path("", home.as_view(), name='trips-home'),
     path("myCategory/<int:user_id>", MyCategoryListView.as_view(), name='trips-myCategory'),
     path("myCategory/new", MyCategoryCreateView.as_view(), name='trips-myCategory-new'),
     path('myCategory/<int:pk>/update/', MyCategoryUpdateView.as_view(), name='trips-myCategory-update'),

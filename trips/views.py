@@ -26,10 +26,6 @@ from django.core.paginator import Paginator
 
 User = get_user_model()
 
-class home(TemplateView):
-    template_name = 'trips/home.html' # we can define the template either here or in the urls
-
-
 class MyCategoryListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Category
     template_name = 'trips/myCategory_list.html' # we can define the template either here or in the urls

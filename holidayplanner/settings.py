@@ -34,6 +34,7 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', os.environ.get('RENDER_HOSTNAME', '')
 INSTALLED_APPS = [
     "trips.apps.TripsConfig",
     "users.apps.UsersConfig",
+    "blog.apps.BlogConfig",
     "crispy_forms", #Updated here
     "crispy_bootstrap5", #Updated here
     'django_countries',
@@ -137,7 +138,7 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 CRISPY_FAIL_SILENTLY = not DEBUG
 
-LOGIN_REDIRECT_URL = 'trips-home'
+LOGIN_REDIRECT_URL ='blog-home'
 LOGIN_URL = 'login'
 
 # MEDIA_ROOT = BASE_DIR / 'media'
