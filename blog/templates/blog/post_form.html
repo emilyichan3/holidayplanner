@@ -1,23 +1,24 @@
 {% extends "trips/base.html" %}
+{% load crispy_forms_tags %} <!-- Updated here to load crispy forms -->
 {% block content %}
-    {% load crispy_forms_tags %} <!-- Updated here to load crispy forms -->
-    <div class=""content-section>
+    <div class="content-section">
         <form method="POST">
-            {% csrf_token %} <!-- Django needs this for the form-->
+            {% csrf_token %}
             <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Blog Post</legend>
+                <legend class="border-bottom mb-4">Blog Post</legend> <!-- Text Changed here -->
 
-                {{ form|crispy }} <!-- Updated to load the form and let crispy take care of the formmating -->
+                {{ form|crispy }} <!-- Updated to load the form and let crispy take care of the --> 
             </fieldset>
             <div class="form-group">
-                <button class="btn btn-outline" type="submit">
+                <button class="btn btn-outline-info" type="submit">
                     {% if form.instance.pk %}
-                    Update Post
+                    Update
                     {% else %}
-                    Create Post
+                    Create
                     {% endif %}
                 </button>
             </div>
         </form>
+        <!-- Changed here, div removed -->
     </div>
 {% endblock content %}

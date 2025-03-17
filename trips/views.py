@@ -153,9 +153,9 @@ class MyPlanCreateView(LoginRequiredMixin, CreateView):
     template_name = 'trips/myPlan_form.html'
     form_class = PlanForm
 
-    def dispatch(self, request, *args, **kwargs):
-        print(f"User authenticated: {request.user.is_authenticated}")
-        return super().dispatch(request, *args, **kwargs)
+    # def dispatch(self, request, *args, **kwargs):
+    #     print(f"User authenticated: {request.user.is_authenticated}")
+    #     return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
         """Dynamically generate the success URL with username."""

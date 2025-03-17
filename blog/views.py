@@ -9,12 +9,15 @@ from django.views.generic import (
 )
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth import get_user_model
-
+from .forms import PostForm
 from .models import Post
+from django import template
+
 
 User = get_user_model()
 
 class PostListView(ListView):
+    register = template.Library()
     model = Post
     template_name = 'blog/post_list.html'
     context_object_name = 'posts'
@@ -28,7 +31,8 @@ class PostDetailView(DetailView):
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
-    fields = ['title', 'content']
+    template_name = 'blog/post_form.html'
+    form_class = PostForm    
 
     def form_valid(self, form):
         form.instance.author = self.request.user # Set the author on the form
@@ -37,7 +41,8 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
-    fields = ['title', 'content']
+    template_name = 'blog/post_form.html'
+    form_class = PostForm    
 
     def form_valid(self, form):
         form.instance.author = self.request.user # Set the author on the form

@@ -12,6 +12,9 @@ User = get_user_model()
 class Post(models.Model):
     title = models.CharField(max_length=100)
     content = models.TextField()
+    country = CountryField(blank_label="(select country)", null=True, blank=True)
+    city = models.CharField(max_length=80,blank=True)    
+    image = models.ImageField(upload_to='blog_pics', storage=MediaCloudinaryStorage(), null=True, blank=True)
     date_posted = models.DateTimeField(default=timezone.now)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
 
@@ -20,4 +23,18 @@ class Post(models.Model):
 
     def get_absolute_url(self):
         return reverse('post-detail', kwargs={'pk': self.pk})
+
+    def get_image_url(self):
+        if self.image: # Generate a Cloudinary thumbnail URL
+            return cloudinary_url(
+                self.image.name, width=300, height=300, crop="lfill"
+            )[0]
+
+class Comment(models.Model):
+    message = models.TextField()
+    date_posted = models.DateTimeField(default=timezone.now)
+    audience = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
+
+    def __str__(self):
+        return self.audience.username
 

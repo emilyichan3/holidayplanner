@@ -60,9 +60,9 @@ class myTripCreateForm(forms.ModelForm):
             if date_to < date_fm:
                 raise ValidationError("The end date must be later than the travel from date.")
 
-        if date_to:
-            if date_to < date.today():
-                raise ValidationError("The end date must be today or a future date.")
+        # if date_to:
+        #     if date_to < date.today():
+        #         raise ValidationError("The end date must be today or a future date.")
 
         return cleaned_data
         

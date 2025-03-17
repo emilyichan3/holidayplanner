@@ -4,16 +4,43 @@
     <img class="rounded-circle article-img" src="{{ post.author.get_image_url }}">
         <div class="media-body">
             <div class="article-metadata">
-                <a class="mr-2" href="#">{{ post.author.username }}</a>
+                <a class="mr-2" href="#">{{ post.author.first_name }} {{ post.author.last_name }}</a>
+                <small class="text-muted">
+                    <img src="https://flagcdn.com/16x12/{{ post.author.country.code|lower }}.png" 
+                    width="16" height="12" alt="{{ post.author.country.name }} flag">
+                     {{ post.author.country.name }}
+                  </small>
             <small class="text-muted">{{ post.date_posted|date:'dS, F, Y'}}</small>
              {% if object.author == user %}
              <div>
-                <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'post-update' object.id %}">Update</a>
-                <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'post-delete' object.id %}">Delete</a>
+                {% comment %} <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'post-update' object.id %}">Update</a> {% endcomment %}
+                    <button class="btn btn-outline-info">
+                    <a
+                      href="{% url 'post-update' object.id %}"
+                    >
+                      Update
+                    </a>
+                  </button>
+                  <a
+                  class="btn btn-outline-danger"
+                  href="{% url 'post-delete' object.id %}"
+                  role="button"
+                    >
+                    Delete
+                </a>
+                {% comment %} <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'post-delete' object.id %}">Delete</a> {% endcomment %}
              </div>    
              {% endif %}
         </div>
             <h2><a class="article-title" href="#">{{ post.title }}</a></h2>
+            {% if post.city or post.country.name %}
+            <small class="text-muted">
+              Travel in
+              {% if post.city %} {{ post.city }}{% endif %}
+              {% if post.city and post.country.name %}, {% endif %}
+              {% if post.country.name %}{{ post.country.name }}{% endif %}
+            </small>
+          {% endif %}
             <p class="article-content">{{ post.content }}</p>
      </div>
 </article>
