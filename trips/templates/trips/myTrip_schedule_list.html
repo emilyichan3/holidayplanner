@@ -24,6 +24,7 @@
         <th scope="col">Time</th>
         <th scope="col">Where</th>
         <th scope="col">Destination</th>
+        <th scope="col">Attachment</td>
         <th scope="col"></th>
       </tr>
     </thead>
@@ -52,6 +53,13 @@
             <a href="{{ schedule.link }}" target="_blank">{{ schedule.destination }}
             {% else %}
             {{ schedule.destination }}
+            {% endif %}
+          </td>
+          <td>
+            {% if schedule.attachment %}
+              <a href="{{ schedule.attachment.url }}" target="_blank">Download Attachment</a>
+            {% else %}
+              none
             {% endif %}
           </td>
           <td>

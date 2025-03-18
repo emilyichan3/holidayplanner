@@ -17,6 +17,13 @@
                     Create
                     {% endif %}
                 </button>
+                <a
+                class="btn btn-outline-danger"
+                href="{% url 'trips-myCategory' username=user.username %}"
+                role="button"
+                >
+                Cancel
+                </a>
             </div>
         </form>
         <!-- Changed here, div removed -->

@@ -23,6 +23,8 @@ from django.views import View
 from .forms import PlanForm, myTripCreateForm, myScheduleCreateForm, myPlanConvertCreateForm
 from django.views.generic import TemplateView
 from django.core.paginator import Paginator
+import cloudinary.uploader
+
 
 User = get_user_model()
 
@@ -396,6 +398,9 @@ class MyScheduleByTripCreateView(LoginRequiredMixin, UserPassesTestMixin, Create
         if form.instance.scheduled_date > trip.date_to:
             messages.error(self.request, f"The date visited must be on or before the trip's last date.: {trip.date_to.strftime('%Y-%m-%d')}.")
             return redirect(reverse("trips-mySchedule-by-myTrip", kwargs={"trip_id": self.kwargs.get('trip_id')}))
+        # print('Form:', form)
+        print('form.cleaned_data:', form.cleaned_data)
+        print('request.FILES:', self.request.FILES)
         return super().form_valid(form)
 
     def get_success_url(self):

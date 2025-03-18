@@ -5,6 +5,8 @@ from datetime import date, timedelta, datetime
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.validators import URLValidator
+from django_countries.fields import CountryField
+from django_countries.widgets import CountrySelectWidget
 
 class PlanForm(forms.ModelForm):
     categories = forms.ModelMultipleChoiceField(
@@ -88,8 +90,7 @@ class myScheduleCreateForm(forms.ModelForm):
                 'link',
                 'country',
                 'city',
-                'image',
-                'attachement']
+                'image']
         
     def __init__(self, *args, **kwargs):
         trip = kwargs.pop('trip', None)  # Extract trip instance
@@ -97,10 +98,13 @@ class myScheduleCreateForm(forms.ModelForm):
 
         if not self.instance.pk:  # Only set default for new forms, not existing ones
             self.fields['scheduled_date'].initial = trip.date_fm
-            # self.fields['scheduled_time'].initial = datetime.now().replace(minute=0, second=0, microsecond=0).time()
+
       
 class myPlanConvertCreateForm(forms.ModelForm):
     destination = forms.CharField(max_length=200)
+    country = CountryField().formfield(label="Country",
+        widget=CountrySelectWidget()
+        )
     city = forms.CharField(max_length=80, required=False)
     scheduled_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     scheduled_time = forms.TimeField(required=False, widget=forms.TimeInput(attrs={'type': 'time'}))
@@ -120,8 +124,7 @@ class myPlanConvertCreateForm(forms.ModelForm):
                 'link',
                 'country',
                 'city',
-                'image',
-                'attachement']
+                'image']
         
     def __init__(self, *args, **kwargs):
         trip = kwargs.pop('trip', None)  # Extract trip instance
