@@ -5,6 +5,7 @@ from .views import (
     PostCreateView,
     PostUpdateView,
     PostDeleteView,
+    PostConvertPlanCreateView,
     UserPostListView,
 )
 from . import views
@@ -16,4 +17,5 @@ urlpatterns = [
     path('post/<int:pk>/update/', PostUpdateView.as_view(), name='post-update'),
     path('post/<int:pk>/delete/', PostDeleteView.as_view(), name='post-delete'),
     path('post/user/<str:username>/', UserPostListView.as_view(), name='user-posts'),
+    path('post/<int:post_id>/AssignToPlan/new/', PostConvertPlanCreateView.as_view(), name='post-Convert-myPlan-new'),
 ]

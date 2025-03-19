@@ -59,7 +59,6 @@ class Schedule(models.Model):
     note = models.TextField(blank=True)
     date_created = models.DateTimeField(default=timezone.now)
     image = models.ImageField(upload_to='trip_pics', storage=MediaCloudinaryStorage(), null=True, blank=True)
-    # attachement = models.FileField(upload_to='trip_files', storage=MediaCloudinaryStorage(), null=True, blank=True)
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='schedule')
     plan = models.ForeignKey(Plan, on_delete=models.SET_NULL, related_name='visited', null=True, blank=True)
     traveler = models.ForeignKey(User, on_delete=models.CASCADE, related_name='schedule')

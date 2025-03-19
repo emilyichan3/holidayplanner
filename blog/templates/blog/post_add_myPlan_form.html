@@ -1,0 +1,28 @@
+{% extends "trips/base.html" %}
+{% load crispy_forms_tags %} 
+{% block content %}
+  <h1>Assign {{ post.title }} to</h1>
+  <form method="POST">
+      {% csrf_token %}
+      <fieldset class="form-group">
+        <legend class="border-bottom mb-4">Plan Detail</legend> 
+        {{ form|crispy }} 
+    </fieldset>
+    <div class="form-group">
+        <button class="btn btn-outline-info" type="submit">
+            {% if form.instance.pk %}
+            Update
+            {% else %}
+            Create
+            {% endif %}
+        </button>
+        <a
+        class="btn btn-outline-danger"
+        href=""
+        role="button"
+        >
+        Cancel
+        </a>        
+    </div>
+  </form>
+{% endblock %}
