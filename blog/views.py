@@ -9,6 +9,7 @@ from django.views.generic import (
 )
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth import get_user_model
+from django.urls import reverse_lazy, reverse
 from .forms import PostForm, PlanForm
 from .models import Post
 from trips.models import Category, Plan
@@ -80,7 +81,7 @@ class PostConvertPlanCreateView(LoginRequiredMixin, CreateView):
     form_class = PlanForm
 
     def get_success_url(self):
-        return reverse("blog-home")
+        return reverse("post-detail", kwargs={"pk": self.kwargs.get('post_id')})
 
     def get_form_kwargs(self):
         """Pass the logged-in user to the form dynamically."""
