@@ -10,7 +10,7 @@ from django.views.generic import (
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth import get_user_model
 from django.urls import reverse_lazy, reverse
-from .forms import PostForm, PlanForm
+from .forms import PostForm, PostConvertCreateForm
 from .models import Post
 from trips.models import Category, Plan
 from django import template
@@ -78,32 +78,27 @@ class UserPostListView(ListView):
 class PostConvertPlanCreateView(LoginRequiredMixin, CreateView):
     model = Plan
     template_name = 'blog/post_add_myPlan_form.html'
-    form_class = PlanForm
+    form_class = PostConvertCreateForm
 
     def get_success_url(self):
-        return reverse("post-detail", kwargs={"pk": self.kwargs.get('post_id')})
+        return reverse("post-detail", kwargs={"pk": self.kwargs.get('pk')})
 
     def get_form_kwargs(self):
-        """Pass the logged-in user to the form dynamically."""
+        # Pass instances to form
         kwargs = super().get_form_kwargs()
-        print(f"User authenticated: {self.request.user.is_authenticated}")  # Debug auth status
+        post = get_object_or_404(Post, id=self.kwargs.get('pk'))
+        kwargs['post'] = post 
         kwargs['user'] = self.request.user  # Ensure user is added
         return kwargs
 
     def form_valid(self, form):
-        print(f"User authenticated: {self.request.user.is_authenticated}")  # Debug auth status
         # Automatically assign the logged-in user as the planner when the form is valid
         form.instance.planner = self.request.user
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
-        # Adding categories and plans to the context
+        # Adding post to template context
         context = super().get_context_data(**kwargs)
-        user = get_object_or_404(User, username= self.request.user.username)
-        categories = Category.objects.filter(
-            marker=user,
-        )
-        context['categories'] = categories        
-        plans = Plan.objects.filter(categories__in=categories)
-        context['plans'] = plans
+        post = get_object_or_404(Post, id=self.kwargs.get('pk'))
+        context['post'] = post
         return context

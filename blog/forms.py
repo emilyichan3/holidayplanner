@@ -7,6 +7,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.validators import URLValidator
 from django_countries.fields import CountryField
 from trips.models import Category, Plan
+from django_countries.widgets import CountrySelectWidget
 
 class PostForm(forms.ModelForm):
     country = CountryField(blank_label="(select country)", 
@@ -21,7 +22,7 @@ class PostForm(forms.ModelForm):
         fields = ['title', 'content', 'country', 'city','image' ]
 
 
-class PlanForm(forms.ModelForm):
+class PostConvertCreateForm(forms.ModelForm):
     categories = forms.ModelMultipleChoiceField(
         queryset=Category.objects.none(),  # Set dynamically in __init__
         widget=forms.CheckboxSelectMultiple,  # This allows users to select multiple categories
@@ -33,17 +34,28 @@ class PlanForm(forms.ModelForm):
         validators=[URLValidator()],
         widget=forms.TextInput(attrs={'placeholder': 'https://example.com'})
     )
+    country = CountryField().formfield(required=False, label="Country",
+        widget=CountrySelectWidget()
+    )    
+    city = forms.CharField(max_length=80, required=False)
+
+    class Meta:
+        model = Plan
+        fields = ['plan_name', 'link', 'country', 'city','categories', 'note' ]
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)  # Extract menu instance
+        post = kwargs.pop('post', None)  
         super().__init__(*args, **kwargs)
         print(f"PlanForm initialized with user: {user}")  # Debugging output
         if user:
             self.fields['categories'].queryset = Category.objects.filter(marker=user)
 
-    class Meta:
-        model = Plan
-        fields = ['plan_name', 'link', 'country', 'city','categories', 'note' ]
-      
+        if post:
+            self.fields['plan_name'].initial = post.title
+            self.fields['country'].initial = post.country
+            self.fields['city'].initial = post.city
+            
+  
 
 

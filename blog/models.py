@@ -10,7 +10,7 @@ from django_countries.fields import CountryField
 User = get_user_model()
 
 class Post(models.Model):
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=200)
     content = models.TextField()
     country = CountryField(blank_label="(select country)", null=True, blank=True)
     city = models.CharField(max_length=80,blank=True)    
