@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpRequest
 from django.views.generic import (
     ListView,
     DetailView,
@@ -89,6 +89,9 @@ class PostConvertPlanCreateView(LoginRequiredMixin, CreateView):
         post = get_object_or_404(Post, id=self.kwargs.get('pk'))
         kwargs['post'] = post 
         kwargs['user'] = self.request.user  # Ensure user is added
+        post_url = self.request.build_absolute_uri(reverse('post-detail', kwargs={'pk': post.pk}))
+        kwargs['post_url'] = post_url
+        print(post_url)        
         return kwargs
 
     def form_valid(self, form):

@@ -46,7 +46,9 @@ class PostConvertCreateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)  # Extract menu instance
         post = kwargs.pop('post', None)  
+        post_url = kwargs.pop('post_url', None)  
         super().__init__(*args, **kwargs)
+        
         print(f"PlanForm initialized with user: {user}")  # Debugging output
         if user:
             self.fields['categories'].queryset = Category.objects.filter(marker=user)
@@ -55,6 +57,9 @@ class PostConvertCreateForm(forms.ModelForm):
             self.fields['plan_name'].initial = post.title
             self.fields['country'].initial = post.country
             self.fields['city'].initial = post.city
+            self.fields['link'].initial = post_url
+            
+            
             
   
 
