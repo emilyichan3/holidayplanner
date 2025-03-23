@@ -46,7 +46,7 @@ class Trip(models.Model):
     traveler = models.ForeignKey(User, on_delete=models.CASCADE, related_name='trip')
     
     def __str__(self):
-        return f'{ self.trip_name }'
+        return f'{ self.trip_name } is owned by { self.traveler.username }'
 
 
 class Schedule(models.Model):

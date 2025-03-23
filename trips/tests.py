@@ -2,6 +2,8 @@ from django.test import TestCase, Client
 from django.contrib.auth import get_user_model  
 from django.urls import reverse
 from .models import Category, Plan, Trip, Schedule
+from django.utils import timezone
+from datetime import date, timedelta, datetime
 
 TEST_USERNAME = 'testuser2'
 TEST_EMAIL = 'testuser2@gmail.com'
@@ -32,7 +34,7 @@ class CategoryModelTests(TestCase):
         self.assertEqual(category.get_absolute_url(), reverse('trips-myCategory', args=[category.marker.username]))
 
 
-class TripsCategoryViewsTests(TestCase):
+class CategoryViewsTests(TestCase):
     def setUp(self):
         self.client = Client()
         self.user = get_user_model().objects.create_user(username=TEST_USERNAME, email=TEST_EMAIL, password=TEST_PASSWORD)
@@ -129,7 +131,7 @@ class PlanModelTests(TestCase):
         self.assertEqual(str(plan), f'{ plan.plan_name } is owned by  { plan.planner.username }')
         
 
-class TripsPlanViewsTests(TestCase):
+class PlanViewsTests(TestCase):
     def setUp(self):
         self.client = Client()
         self.user = get_user_model().objects.create_user(username=TEST_USERNAME, email=TEST_EMAIL, password=TEST_PASSWORD)
@@ -221,3 +223,102 @@ class TripsPlanViewsTests(TestCase):
         post_response = self.client.post(url)
         self.assertEqual(post_response.status_code, 302)  # Redirect after POST
         self.assertFalse(Plan.objects.filter(pk=self.plan.pk).exists())
+
+
+class TripModelTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = get_user_model().objects.create_user(username=TEST_USERNAME, email=TEST_EMAIL, password=TEST_PASSWORD)
+        cls.trip = Trip.objects.create(
+            traveler=cls.user,
+            trip_name='Test Trip',
+            trip_description='This is a test trip'
+        )
+
+        cls.trip = Trip.objects.create(
+            traveler=cls.user,
+            trip_name='Test Trip',
+            trip_description='This is a test trip',
+            date_fm= date.today(),
+            date_to= date.today() + timedelta(days=6)
+        )
+
+    def test_Trip_content(self):
+        trip = Trip.objects.get(pk=1)
+        self.assertEqual(trip.traveler.username, TEST_USERNAME)
+        self.assertEqual(trip.trip_name, 'Test Trip')
+        self.assertEqual(trip.trip_description, 'This is a test trip')
+
+    def test_Trip_str_method(self):
+        trip = Trip.objects.get(pk=1)
+        self.assertEqual(str(trip), f'{ trip.trip_name } is owned by { trip.traveler.username }')
+        
+
+class TripViewsTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = get_user_model().objects.create_user(username=TEST_USERNAME, email=TEST_EMAIL, password=TEST_PASSWORD)
+        self.trip = Trip.objects.create(
+            traveler = self.user,
+            trip_name='Test Trip',
+            trip_description='This is a test trip',
+            date_fm=date.today(),
+            date_to=date.today()+ timedelta(days=6),
+        )
+
+    def test_MyTripListView(self):
+        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
+        url = reverse('trips-myTrip', kwargs={'username': self.user.username})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'This is a test trip')
+        self.assertTemplateUsed(response, 'trips/myTrip_list.html')
+
+    def test_MyTripCreateView(self):
+        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
+        get_response = self.client.get(reverse('trips-myTrip-new'))
+        self.assertEqual(get_response.status_code, 200)
+        self.assertTemplateUsed(get_response, 'trips/myTrip_form.html')
+
+        trip_response = self.client.post(reverse('trips-myTrip-new'), {
+            'trip_name': 'New Test Trip',
+            'trip_description': 'This is a new test trip',
+            'date_fm':date.today(),
+            'date_to':date.today() + timedelta(days=7),
+        })
+        # debug tool
+        # print(trip_response.context['form'].errors)
+        self.assertEqual(trip_response.status_code, 302)
+        self.assertTrue(Trip.objects.filter(trip_name='New Test Trip').exists())
+
+    def test_MyTripUpdateView(self):
+        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
+        url = reverse('trips-myTrip-update', kwargs={'pk': self.trip.pk})
+        get_response = self.client.get(url)
+        self.assertEqual(get_response.status_code, 200)
+        self.assertTemplateUsed(get_response, 'trips/myTrip_form.html')
+
+        self.assertEqual(self.trip.trip_name, 'Test Trip')  # Check the original
+        
+        trip_response = self.client.post(url, {
+            'trip_name': 'Update Test Trip',
+            'trip_description': 'This is a update test trip',
+            'date_fm':date.today(),
+            'date_to':date.today() + timedelta(days=6)
+         })
+
+        self.trip.refresh_from_db()
+        # print(trip_response.context['form'].errors)
+        self.assertEqual(trip_response.status_code, 302)  # Redirect after POST
+        self.assertEqual(self.trip.trip_name, 'Update Test Trip')
+
+    def test_MyTripDeleteView(self):
+        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
+        url = reverse('trips-myTrip-delete', kwargs={'pk': self.trip.pk})
+        get_response = self.client.get(url)
+        self.assertEqual(get_response.status_code, 200)
+        self.assertTemplateUsed(get_response, 'trips/myTrip_confirm_delete.html')
+
+        post_response = self.client.post(url)
+        self.assertEqual(post_response.status_code, 302)  # Redirect after POST
+        self.assertFalse(Trip.objects.filter(pk=self.trip.pk).exists())
