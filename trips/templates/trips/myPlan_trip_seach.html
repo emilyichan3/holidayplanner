@@ -1,4 +1,5 @@
 {% extends "trips/base.html" %}
+{% load static %}
 {% block content %}
 <h1>Assign {{ plan.plan_name }} to</h1>
 <button class="btn btn-outline-info">
@@ -47,4 +48,5 @@
       </tbody>
     </table>    
   </div>
+  <script src="{% static 'trips/js/script_trips.js' %}"></script>  
 {% endblock %}

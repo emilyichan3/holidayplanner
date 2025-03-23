@@ -1,5 +1,11 @@
 {% extends "trips/base.html" %}
+{% load static %}
 {% block content %}
+<form method="GET">
+  <input type="text" name="q_country" placeholder="Search country..." value="{{ request.GET.q_country }}">
+  <input type="text" name="q_city" placeholder="Search city..." value="{{ request.GET.q_city }}">
+  <button type="submit">Search</button>
+</form>
 <div>
   {% if user.is_authenticated %}
     <button class="btn btn-outline-info">
@@ -53,4 +59,5 @@
       {% endif %}
     </div>
   {% endif %}
+<script src="{% static 'blog/js/script_blog.js' %}"></script>
 {% endblock content %}

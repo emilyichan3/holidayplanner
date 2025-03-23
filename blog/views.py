@@ -23,9 +23,22 @@ class PostListView(ListView):
     model = Post
     template_name = 'blog/post_list.html'
     context_object_name = 'posts'
-    ordering = ['-date_posted']
     paginate_by = 5
 
+    def get_queryset(self):
+        posts = Post.objects.order_by('-date_posted')        
+        q_country = self.request.GET.get("q_country")
+        q_city = self.request.GET.get("q_city")
+        
+        filters = {}
+        if q_country:
+            filters["country__icontains"] = q_country.strip()
+        if q_city:
+            filters["city__icontains"] = q_city.strip()       
+        if filters: 
+            posts = posts.filter(**filters)
+
+        return posts
 
 class PostDetailView(DetailView):
     model = Post
@@ -35,6 +48,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     template_name = 'blog/post_form.html'
     form_class = PostForm    
+
 
     def form_valid(self, form):
         form.instance.author = self.request.user # Set the author on the form
@@ -72,8 +86,20 @@ class UserPostListView(ListView):
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
-        return user.posts.order_by('-date_posted')
+        posts = user.posts.order_by('-date_posted')
 
+        q_country = self.request.GET.get("q_country")
+        q_city = self.request.GET.get("q_city")
+
+        filters = {}
+        if q_country:
+            filters["country__icontains"] = q_country.strip()
+        if q_city:
+            filters["city__icontains"] = q_city.strip()       
+        if filters: 
+            posts = posts.filter(**filters)
+
+        return posts
 
 class PostConvertPlanCreateView(LoginRequiredMixin, CreateView):
     model = Plan

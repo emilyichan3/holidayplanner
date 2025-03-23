@@ -136,14 +136,18 @@ class MyPlanListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         q_plan_name = self.request.GET.get("q_plan_name")
         q_category = self.request.GET.get("q_category")
         
+        filters = {}
         if q_country:
-            plans = plans.filter(country__icontains=q_country)
+            filters["country__icontains"] = q_country.strip()
         if q_city:
-            plans = plans.filter(city__icontains=q_city)            
+            filters["city__icontains"] = q_city.strip()        
         if q_plan_name:
-            plans = plans.filter(country__icontains=q_plan_name)
+            filters["country__icontains"] = q_plan_name.strip()      
         if q_category:
-            plans = plans.filter(categories__category_name__icontains=q_category)
+            filters["categories__category_name__icontains"] = q_category.strip()  
+        if filters: 
+            plans = plans.filter(**filters)    
+
         return plans
 
     def test_func(self):
@@ -237,19 +241,24 @@ class MyPlanSearchListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         q_trip = self.request.GET.get("q_trip")
         q_date = self.request.GET.get("q_date")
 
+        filters = {}
         if q_trip:
-            trips = trips.filter(trip_name__icontains=q_trip)
+            filters["trip_name__icontains"] = q_trip.strip()
+            # trips = trips.filter(trip_name__icontains=q_trip)
 
         if q_date:
             try:
                 q_date = datetime.strptime(q_date, "%Y-%m-%d").date()  # Convert string to date
-                trips = trips.filter(
-                date_fm__lte=q_date, 
-                date_to__gte=q_date 
-            )
+                filters["date_fm__lte"] = q_date
+                filters["date_to__gte"] = q_date
+            #     trips = trips.filter(
+            #     date_fm__lte=q_date, 
+            #     date_to__gte=q_date 
+            # )
             except ValueError:
                 q_date = None  # Handle invalid date inputs
-
+        if filters: 
+            trips = trips.filter(**filters)    
         return trips
 
     def get_context_data(self, **kwargs):
@@ -481,15 +490,19 @@ class MyScheduleSearchByMyPlanListView(LoginRequiredMixin, UserPassesTestMixin, 
         q_city = self.request.GET.get("q_city")
         q_plan_name = self.request.GET.get("q_plan_name")
         q_category = self.request.GET.get("q_category")
-        
+
+        filters = {}
         if q_country:
-            plans = plans.filter(country__icontains=q_country)
+            filters["country__icontains"] = q_country.strip()
         if q_city:
-            plans = plans.filter(city__icontains=q_city)            
+            filters["city__icontains"] = q_city.strip()        
         if q_plan_name:
-            plans = plans.filter(country__icontains=q_plan_name)
+            filters["country__icontains"] = q_plan_name.strip()      
         if q_category:
-            plans = plans.filter(categories__category_name__icontains=q_category)
+            filters["categories__category_name__icontains"] = q_category.strip()  
+        if filters: 
+            plans = plans.filter(**filters)    
+
         return plans
 
     def get_context_data(self, **kwargs):

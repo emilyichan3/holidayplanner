@@ -1,4 +1,5 @@
 {% extends "trips/base.html" %}
+{% load static %}
 {% block content %}
 <h1>Upcoming {{ trip.trip_name }} trip - From {{ trip.date_fm|date:'d/m/Y' }} to {{ trip.date_to|date:'d/m/Y' }}</h1>
 <button class="btn btn-outline-info">
@@ -32,16 +33,6 @@
         {% for plan in plans %}
           <tr>
             <td>
-              {% comment %} <div class="d-flex custom-gap">
-                {% if plan.id in added_plans %}
-                  <button class="btn btn-outline-info" disabled>Added</button>
-                {% else %}
-                  <form method="POST" action="{% url 'trips-mySchedule-myPlan-Convert' trip.id plan.id %}">
-                    {% csrf_token %}
-                      <button type="submit" class="btn btn-outline-info">Select</button>
-                  </form>
-                {% endif %}
-              </div> {% endcomment %}
               <button class="btn btn-outline-info">
                 <a
                 href="{% url 'trips-myPlan-Convert-new' trip_id=trip.id plan_id=plan.id%}"
@@ -76,4 +67,5 @@
       </tbody>
     </table>    
   </div>
+  <script src="{% static 'trips/js/script_trips.js' %}"></script>
 {% endblock %}

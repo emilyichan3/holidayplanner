@@ -4,7 +4,7 @@
     <img class="rounded-circle article-img" src="{{ post.author.get_image_url }}">
         <div class="media-body">
             <div class="article-metadata">
-                <a class="mr-2" href="#">{{ post.author.first_name }} {{ post.author.last_name }}</a>
+                <a class="mr-2" href="{% url 'user-posts' post.author.username %}">{{ post.author.first_name }} {{ post.author.last_name }}</a>
                 <small class="text-muted">
                     <img src="https://flagcdn.com/16x12/{{ post.author.country.code|lower }}.png" 
                     width="16" height="12" alt="{{ post.author.country.name }} flag">
