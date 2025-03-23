@@ -24,7 +24,7 @@ class PlanForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)  # Extract menu instance
         super().__init__(*args, **kwargs)
-        print(f"PlanForm initialized with user: {user}")  # Debugging output
+        print(f"PlanForm initialized with user: {user.username}")  # Debugging output
         if user:
             self.fields['categories'].queryset = Category.objects.filter(marker=user)
 

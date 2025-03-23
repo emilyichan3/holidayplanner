@@ -34,7 +34,7 @@ class Plan(models.Model):
     categories = models.ManyToManyField(Category, related_name="plans")  # Many-to-Many relationship
     
     def __str__(self):
-        return f'{ self.plan_name } is in { self.country }'
+        return f'{ self.plan_name } is owned by  { self.planner.username }'
 
 
 class Trip(models.Model):

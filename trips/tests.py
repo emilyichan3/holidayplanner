@@ -32,7 +32,7 @@ class CategoryModelTests(TestCase):
         self.assertEqual(category.get_absolute_url(), reverse('trips-myCategory', args=[category.marker.username]))
 
 
-class TripsViewsTests(TestCase):
+class TripsCategoryViewsTests(TestCase):
     def setUp(self):
         self.client = Client()
         self.user = get_user_model().objects.create_user(username=TEST_USERNAME, email=TEST_EMAIL, password=TEST_PASSWORD)
@@ -93,3 +93,131 @@ class TripsViewsTests(TestCase):
         post_response = self.client.post(url)
         self.assertEqual(post_response.status_code, 302)  # Redirect after POST
         self.assertFalse(Category.objects.filter(pk=self.category.pk).exists())
+
+
+class PlanModelTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = get_user_model().objects.create_user(username=TEST_USERNAME, email=TEST_EMAIL, password=TEST_PASSWORD)
+        cls.category = Category.objects.create(
+            marker=cls.user,
+            category_name='Test Food Category',
+            description='This is a test food category'
+        )
+
+        cls.plan = Plan.objects.create(
+            planner=cls.user,
+            plan_name='Test Plan',
+            note='This is a test plan',
+            country='Ireland',
+            city='Dublin'
+        )
+        # set ManyToManyField
+        cls.plan.categories.set([cls.category]) 
+    
+    def test_Plan_content(self):
+        category = Category.objects.get(pk=1)
+        plan = Plan.objects.get(pk=1)
+        self.assertEqual(plan.planner.username, TEST_USERNAME)
+        self.assertEqual(plan.plan_name, 'Test Plan')
+        self.assertEqual(plan.country, 'Ireland')
+         # Correct way to check ManyToMany relationship
+        self.assertIn(category, plan.categories.all()) 
+
+    def test_Plan_str_method(self):
+        plan = Plan.objects.get(pk=1)
+        self.assertEqual(str(plan), f'{ plan.plan_name } is owned by  { plan.planner.username }')
+        
+
+class TripsPlanViewsTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = get_user_model().objects.create_user(username=TEST_USERNAME, email=TEST_EMAIL, password=TEST_PASSWORD)
+        self.category = Category.objects.create(
+            marker=self.user,
+            category_name='Test Food Category',
+            description='This is a test food category'
+        )
+        category = Category.objects.get(category_name='Test Food Category')  # Get the category ID
+
+        self.plan = Plan.objects.create(
+            planner = self.user,
+            plan_name='Test Plan',
+            note='This is a test plan',
+            country='Ireland',
+            city='Dublin'
+        )
+        self.plan.categories.add(category)  # Associate category with the plan
+        # self.plan.categories.set([self.category]) 
+
+    def test_MyPlanListView(self):
+        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
+        url = reverse('trips-myPlan', kwargs={'username': self.user.username})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'This is a test plan')
+        self.assertTemplateUsed(response, 'trips/myPlan_list.html')
+
+    def test_MyPlanCreateView(self):
+        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
+        get_response = self.client.get(reverse('trips-myPlan-new'))
+        self.assertEqual(get_response.status_code, 200)
+        self.assertTemplateUsed(get_response, 'trips/myPlan_form.html')
+
+        category_response = self.client.post(reverse('trips-myCategory-new'), {
+            'category_name': 'New Test Asia Category',
+            'description': 'New This is a test Asia category'
+        })
+        # Ensure the category was created successfully
+        self.assertEqual(category_response.status_code, 302)  # 302 indicates redirection after creating the category
+        category = Category.objects.get(category_name='New Test Asia Category')  # Get the category ID
+        print(category)
+        plan_response = self.client.post(reverse('trips-myPlan-new'), {
+            'plan_name': 'New Test Plan',
+            'note': 'This is a new test plan',
+            'country':'IE',
+            'city':'Dublin',
+            'categories':[category.id]
+        })
+        # print(plan_response.context['form'].errors)
+        self.assertEqual(plan_response.status_code, 302)
+        plan = Plan.objects.get(plan_name='New Test Plan')
+        self.assertIn(category, plan.categories.all())  # Check if category is linked
+        self.assertTrue(Plan.objects.filter(plan_name='New Test Plan').exists())
+
+    def test_MyPlanUpdateView(self):
+        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
+        url = reverse('trips-myPlan-update', kwargs={'pk': self.plan.pk})
+        get_response = self.client.get(url)
+        self.assertEqual(get_response.status_code, 200)
+        self.assertTemplateUsed(get_response, 'trips/myPlan_form.html')
+
+        self.assertEqual(self.plan.plan_name, 'Test Plan')  # Check the original
+
+        # Ensure at least one category exists
+        category = Category.objects.create(
+            marker=self.user,
+            category_name='Test Category',
+            description='Test category description'
+        )
+        self.plan.categories.add(category)  # Associate category with the plan
+        
+        plan_response = self.client.post(url, {
+            'plan_name': 'Update Test Plan',
+            'categories': [category.pk]  # Pass a list of category IDs
+         })
+
+        self.plan.refresh_from_db()
+        self.assertEqual(plan_response.status_code, 302)  # Redirect after POST
+        self.assertEqual(self.plan.plan_name, 'Update Test Plan')
+
+    def test_MyPlanDeleteView(self):
+        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
+        url = reverse('trips-myPlan-delete', kwargs={'pk': self.category.pk})
+        get_response = self.client.get(url)
+        self.assertEqual(get_response.status_code, 200)
+        self.assertTemplateUsed(get_response, 'trips/myPlan_confirm_delete.html')
+
+        post_response = self.client.post(url)
+        self.assertEqual(post_response.status_code, 302)  # Redirect after POST
+        self.assertFalse(Plan.objects.filter(pk=self.plan.pk).exists())
