@@ -64,7 +64,7 @@ class Schedule(models.Model):
     traveler = models.ForeignKey(User, on_delete=models.CASCADE, related_name='schedule')
     
     def __str__(self):
-        return f'{ self.destination } is in { self.country }'
+        return f'{ self.destination } is scheduled by { self.traveler.username }'
 
     def get_image_url(self):
         if self.image: # Generate a Cloudinary thumbnail URL

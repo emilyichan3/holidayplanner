@@ -103,7 +103,8 @@ class myScheduleCreateForm(forms.ModelForm):
 class myPlanConvertCreateForm(forms.ModelForm):
     destination = forms.CharField(max_length=200)
     country = CountryField().formfield(label="Country",
-        widget=CountrySelectWidget()
+        widget=CountrySelectWidget(),
+        required=False
         )
     city = forms.CharField(max_length=80, required=False)
     scheduled_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))

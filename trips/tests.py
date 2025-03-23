@@ -224,6 +224,14 @@ class PlanViewsTests(TestCase):
         self.assertEqual(post_response.status_code, 302)  # Redirect after POST
         self.assertFalse(Plan.objects.filter(pk=self.plan.pk).exists())
 
+    def test_MyPlanSearchListView(self):
+        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
+        url = reverse('trips-myPlan-Search', kwargs={'pk': self.plan.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Test Plan')
+        self.assertTemplateUsed(response, 'trips/myPlan_trip_seach.html')
+
 
 class TripModelTests(TestCase):
     @classmethod
@@ -322,3 +330,153 @@ class TripViewsTests(TestCase):
         post_response = self.client.post(url)
         self.assertEqual(post_response.status_code, 302)  # Redirect after POST
         self.assertFalse(Trip.objects.filter(pk=self.trip.pk).exists())
+
+
+class ScheduleModelTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = get_user_model().objects.create_user(username=TEST_USERNAME, email=TEST_EMAIL, password=TEST_PASSWORD)
+        cls.trip = Trip.objects.create(
+            traveler=cls.user,
+            trip_name='Test Trip',
+            trip_description='This is a test trip',
+            date_fm=date.today(),
+            date_to=date.today()+ timedelta(days=6),
+        )
+
+        cls.schedule = Schedule.objects.create(
+            traveler=cls.user,
+            destination='Test Schedule',
+            scheduled_date= date.today(),
+            trip=cls.trip
+        )
+    
+    def test_Schedule_content(self):
+        trip = Trip.objects.get(pk=1)
+        schedule = Schedule.objects.get(pk=1)
+        self.assertEqual(schedule.traveler.username, TEST_USERNAME)
+        self.assertEqual(schedule.destination, 'Test Schedule')
+        self.assertEqual(schedule.trip, trip)
+
+
+    def test_Schedule_str_method(self):
+        schedule = Schedule.objects.get(pk=1)
+        self.assertEqual(str(schedule), f'{ schedule.destination } is scheduled by { schedule.traveler.username }')
+
+
+class ScheduleViewsTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = get_user_model().objects.create_user(username=TEST_USERNAME, email=TEST_EMAIL, password=TEST_PASSWORD)
+        self.trip = Trip.objects.create(
+            traveler=self.user,
+            trip_name='Test Trip',
+            trip_description='This is a test trip',
+            date_fm=date.today(),
+            date_to=date.today()+ timedelta(days=6),
+        )
+
+        self.schedule = Schedule.objects.create(
+            traveler = self.user,
+            destination='Test Schedule',
+            scheduled_date= date.today(),
+            trip=self.trip
+        )
+        self.category = Category.objects.create(
+            marker=self.user,
+            category_name='Test Food Category',
+            description='This is a test food category'
+        )
+        category = Category.objects.get(category_name='Test Food Category')  # Get the category ID
+
+        self.plan = Plan.objects.create(
+            planner = self.user,
+            plan_name='Test Plan',
+            note='This is a test plan',
+            country='Ireland',
+            city='Dublin'
+        )
+        self.plan.categories.add(category)  # Associate category with the plan
+
+    def test_MyScheduleByTripListView(self):
+        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
+        trip = Trip.objects.get(pk=1)
+        url = reverse('trips-mySchedule-by-myTrip', kwargs={'trip_id': trip.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Test Schedule')
+        self.assertTemplateUsed(response, 'trips/myTrip_schedule_list.html')
+
+    def test_MyScheduleByTripCreateView(self):
+        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
+        trip = Trip.objects.get(pk=1)
+        get_response = self.client.get(reverse('trips-mySchedule-by-myTrip-new', kwargs={'trip_id': trip.id}))
+        self.assertEqual(get_response.status_code, 200)
+        self.assertTemplateUsed(get_response, 'trips/myTrip_schedule_form.html')
+
+        schedule_response = self.client.post(reverse('trips-mySchedule-by-myTrip-new', kwargs={'trip_id': trip.id}), {
+            'destination': 'New Test Schedule',
+            'scheduled_date': date.today(),
+            'trip': trip.id
+        })
+        # print(plan_response.context['form'].errors)
+        self.assertEqual(schedule_response.status_code, 302)
+        self.assertTrue(Schedule.objects.filter(destination='New Test Schedule').exists())
+
+    def test_MyScheduleByTripUpdateView(self):
+        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
+        trip = Trip.objects.get(pk=1)
+        url = reverse('trips-mySchedule-by-myTrip-update', kwargs={ 'trip_id': trip.id, 'pk': self.schedule.pk})
+        get_response = self.client.get(url)
+        self.assertEqual(get_response.status_code, 200)
+        self.assertTemplateUsed(get_response, 'trips/myTrip_schedule_form.html')
+
+        self.assertEqual(self.schedule.destination, 'Test Schedule')  # Check the original
+
+        schedule_response = self.client.post(url, {
+            'destination': 'Update Test Schedule',
+            'scheduled_date': date.today(),
+            'trip': trip.id  # Pass a list of category IDs
+         })
+
+        self.schedule.refresh_from_db()
+        self.assertEqual(schedule_response.status_code, 302)  # Redirect after POST
+        self.assertEqual(self.schedule.destination, 'Update Test Schedule')
+
+    def test_MyScheduleByTripDeleteView(self):
+        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
+        trip = Trip.objects.get(pk=1)    
+        url = reverse('trips-mySchedule-by-myTrip-delete', kwargs={ 'trip_id': trip.id, 'pk': self.schedule.pk})        
+        get_response = self.client.get(url)
+        self.assertEqual(get_response.status_code, 200)
+        self.assertTemplateUsed(get_response, 'trips/myTrip_schedule_delete.html')
+
+        post_response = self.client.post(url)
+        self.assertEqual(post_response.status_code, 302)  # Redirect after POST
+        self.assertFalse(Schedule.objects.filter(pk=self.schedule.pk).exists())
+
+    def test_MyScheduleSearchByMyPlanListView(self):
+        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
+        trip = Trip.objects.get(pk=1)
+        url = reverse('trips-mySchedule-Search', kwargs={'trip_id': trip.id, 'username': self.user.username})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Test Schedule')
+        self.assertTemplateUsed(response, 'trips/myTrip_schedule_seach.html')
+
+    def test_MyScheduleSearchByMyPlanListView(self):
+        self.client.login(username=TEST_USERNAME, password=TEST_PASSWORD)
+        trip = Trip.objects.get(pk=1)
+        plan = Plan.objects.get(pk=1)
+        get_response = self.client.get(reverse('trips-myPlan-Convert-new', kwargs={'trip_id': trip.id, 'plan_id': plan.id}))
+        self.assertEqual(get_response.status_code, 200)
+        self.assertTemplateUsed(get_response, 'trips/myTrip_schedule_form.html')
+
+        schedule_response = self.client.post(reverse('trips-myPlan-Convert-new', kwargs={'trip_id': trip.id, 'plan_id': plan.id}), {
+            'destination': plan.plan_name,
+            'scheduled_date': date.today(),
+            'trip': trip.id
+        })
+        # print(schedule_response.context['form'].errors)
+        self.assertEqual(schedule_response.status_code, 302)
+        self.assertTrue(Schedule.objects.filter(destination='Test Plan').exists())
