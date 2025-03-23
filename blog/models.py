@@ -19,7 +19,7 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
 
     def __str__(self):
-        return self.title
+        return f'{ self.title } is written by { self.author.username }'
 
     def get_absolute_url(self):
         return reverse('post-detail', kwargs={'pk': self.pk})
@@ -29,12 +29,3 @@ class Post(models.Model):
             return cloudinary_url(
                 self.image.name, width=300, height=300, crop="lfill"
             )[0]
-
-class Comment(models.Model):
-    message = models.TextField()
-    date_posted = models.DateTimeField(default=timezone.now)
-    audience = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
-
-    def __str__(self):
-        return self.audience.username
-

@@ -37,7 +37,7 @@ class PostListView(ListView):
             filters["city__icontains"] = q_city.strip()       
         if filters: 
             posts = posts.filter(**filters)
-
+            
         return posts
 
 class PostDetailView(DetailView):
@@ -71,6 +71,7 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
+    template_name = 'blog/post_confirm_delete.html'
     success_url = "/"
 
     def test_func(self):

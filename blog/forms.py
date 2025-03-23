@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from .models import Post, Comment
+from .models import Post
 from datetime import date, timedelta, datetime
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
