@@ -566,5 +566,5 @@ class MyPlanConvertCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateVie
         plan = get_object_or_404(Plan, id=self.kwargs.get('plan_id'))  
         return self.request.user == trip.traveler and self.request.user == plan.planner
 
-class CalculatorView(TemplateView):
-    template_name = 'trips/calculator.html' # we can define the template either here or in the urls
+class CurrencyConverterView(TemplateView):
+    template_name = 'trips/currencyConverter.html' # we can define the template either here or in the urls
