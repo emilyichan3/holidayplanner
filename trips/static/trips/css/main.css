@@ -187,7 +187,6 @@ ul .custom-li {
   -webkit-line-clamp: 3; 
   -webkit-box-orient: vertical; 
   overflow: hidden;
-  color: brown;
   max-height: 4.5em; /* Adjust based on font size */
   white-space: normal; /* Ensures text wraps properly */  
 }

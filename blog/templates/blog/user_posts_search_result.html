@@ -1,6 +1,7 @@
 {% extends "trips/base.html" %}
 {% block content %}
-<form method="GET" role="search" action="{% url 'post-search' %}">
+{{ username }}
+<form method="GET" role="search" action="{% url 'user-posts-search' username %}">
   <input type="text" name="q" placeholder="Search" value="{{ request.GET.q }}">
   <button type="submit">
     <i class="bi bi-search"></i>

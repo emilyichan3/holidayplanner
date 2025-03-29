@@ -1,7 +1,7 @@
 {% extends "trips/base.html" %}
 {% load static %}
 {% block content %}
-<form method="GET" role="search" action="{% url 'post_search_result' %}">
+<form method="GET" role="search" action="{% url 'post-search' %}">
   <input type="text" name="q" placeholder="Search" value="{{ request.GET.q }}">
   <button type="submit">
     <i class="bi bi-search"></i>
@@ -42,8 +42,8 @@
     {% if is_paginated %}
     <div class='post-pagination'>
       {% if page_obj.has_previous %}
-        <a class='btn btn-outline-info mb-4' href='?page=1'>First</a>
-        <a class='btn btn-outline-info mb-4' href='?page={{ page_obj.previous_page_number }}'>Previous</a>
+        <a class='btn btn-outline-info mb-4' href='?page=1'><i class="fa fa-angle-double-left"></i></a>
+        <a class='btn btn-outline-info mb-4' href='?page={{ page_obj.previous_page_number }}'><i class="fa fa-angle-left"></i></a>
       {% endif %}
 
       {% for num in page_obj.paginator.page_range %}
@@ -55,8 +55,8 @@
       {% endfor %}
 
       {% if page_obj.has_next %}
-        <a class='btn btn-outline-info mb-4' href='?page={{ page_obj.next_page_number }}'>Next</a>
-        <a class='btn btn-outline-info mb-4' href='?page={{ page_obj.paginator.num_pages }}'>Last</a>
+        <a class='btn btn-outline-info mb-4' href='?page={{ page_obj.next_page_number }}'><i class="fa fa-angle-right"></i></a>
+        <a class='btn btn-outline-info mb-4' href='?page={{ page_obj.paginator.num_pages }}'><i class="fa fa-angle-double-right"></i></a>
       {% endif %}
     </div>
   {% endif %}

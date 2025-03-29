@@ -1,10 +1,11 @@
 {% extends "trips/base.html" %}
 {% load static %}
 {% block content %}
-<form method="GET">
-  <input type="text" name="q_country" placeholder="Search country..." value="{{ request.GET.q_country }}">
-  <input type="text" name="q_city" placeholder="Search city..." value="{{ request.GET.q_city }}">
-  <button type="submit">Search</button>
+<form method="GET" role="search" action="{% url 'user-posts-search' view.kwargs.username %}">
+  <input type="text" name="q" placeholder="Search" value="{{ request.GET.q }}">
+  <button type="submit">
+    <i class="bi bi-search"></i>
+  </button>
 </form>
 
   <h1 class='mb-3'>
@@ -31,32 +32,31 @@
             {{ post.title }}
           </a>
         </h2>
-        <p class="article-content text-break d-inline-block">{{ post.content }}</p>
+        <p class="article-content text-break text-limit-3">{{ post.content }}</p>
       </div>
     </article>
   {% endfor %}
+
   {% if is_paginated %}
+  <div class='post-pagination'>
+    {% if page_obj.has_previous %}
+      <a class='btn btn-outline-info mb-4' href='?page=1'><i class="fa fa-angle-double-left"></i></a>
+      <a class='btn btn-outline-info mb-4' href='?page={{ page_obj.previous_page_number }}'><i class="fa fa-angle-left"></i></a>
+    {% endif %}
 
-    <div class='post-pagination'>
-      {% if page_obj.has_previous %}
-        <a class='btn btn-outline-info mb-4' href='?page=1'>First</a>
-        <a class='btn btn-outline-info mb-4' href='?page={{ page_obj.previous_page_number }}'>Previous</a>
+    {% for num in page_obj.paginator.page_range %}
+      {% if page_obj.number == num %}
+        <a class='btn btn-info mb-4' href='?page={{ num }}'>{{ num }}</a>
+      {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+        <a class='btn btn-outline-info mb-4' href='?page={{ num }}'>{{ num }}</a>
       {% endif %}
+    {% endfor %}
 
-      {% for num in page_obj.paginator.page_range %}
-        {% if page_obj.number == num %}
-          <a class='btn btn-info mb-4' href='?page={{ num }}'>{{ num }}</a>
-        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-          <a class='btn btn-outline-info mb-4' href='?page={{ num }}'>{{ num }}</a>
-        {% endif %}
-      {% endfor %}
-
-      {% if page_obj.has_next %}
-        <a class='btn btn-outline-info mb-4' href='?page={{ page_obj.next_page_number }}'>Next</a>
-        <a class='btn btn-outline-info mb-4' href='?page={{ page_obj.paginator.num_pages }}'>Last</a>
-      {% endif %}
-    </div>
-
-  {% endif %}
+    {% if page_obj.has_next %}
+      <a class='btn btn-outline-info mb-4' href='?page={{ page_obj.next_page_number }}'><i class="fa fa-angle-right"></i></a>
+      <a class='btn btn-outline-info mb-4' href='?page={{ page_obj.paginator.num_pages }}'><i class="fa fa-angle-double-right"></i></a>
+    {% endif %}
+  </div>
+{% endif %}
   <script src="{% static 'blog/js/script_blog.js' %}"></script>
 {% endblock content %}

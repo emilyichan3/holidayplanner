@@ -25,18 +25,18 @@ class PostListView(ListView):
     model = Post
     template_name = 'blog/post_list.html'
     context_object_name = 'posts'
-    paginate_by = 3
+    paginate_by = 5
 
     def get_queryset(self):
         posts = Post.objects.order_by('-date_posted')        
             
         return posts
 
-def post_search_result(request):
+def Post_Search_Result(request):
     query = request.GET.get('q', '').strip()
     posts=[]
     total = 0
-    paginate_by = 3
+    paginate_by = 1
     if query:
         search_filter = ( 
                 Q(country__icontains=query.strip()) | 
@@ -62,7 +62,7 @@ def post_search_result(request):
         'query': query, 
         'total': total
     })
-    # return render(request, 'blog/post_search_result.html', {'posts': posts, 'query': query, 'total': total})
+
 
 class PostDetailView(DetailView):
     model = Post
@@ -107,24 +107,50 @@ class UserPostListView(ListView):
     model = Post
     template_name = 'blog/user_posts.html'
     context_object_name = 'posts'
-    paginate_by = 5
+    paginate_by = 2
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         posts = user.posts.order_by('-date_posted')
 
-        q_country = self.request.GET.get("q_country")
-        q_city = self.request.GET.get("q_city")
-
-        filters = {}
-        if q_country:
-            filters["country__icontains"] = q_country.strip()
-        if q_city:
-            filters["city__icontains"] = q_city.strip()       
-        if filters: 
-            posts = posts.filter(**filters)
-
         return posts
+
+
+def UserPost_Search_Result(request, username):
+    user = get_object_or_404(User, username=username)
+    query = request.GET.get('q', '').strip()
+    username = user.username
+    posts=[]
+    total = 0
+    paginate_by = 1
+    if query:
+        search_filter = ( 
+                Q(author__id=user.id) & (
+                Q(country__icontains=query.strip()) | 
+                Q(city__icontains=query.strip()) | 
+                Q(title__icontains=query.strip()) | 
+                Q(content__icontains=query.strip())))    
+        posts = Post.objects.filter(search_filter).order_by('-date_posted')       
+        total = posts.count()
+
+    # Pagination
+    paginator = Paginator(posts, paginate_by)
+    page_number = request.GET.get('page', 1)
+
+    try:
+        posts = paginator.page(page_number)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
+
+    return render(request, 'blog/user_posts_search_result.html', {
+        'posts': posts, 
+        'query': query, 
+        'total': total,
+        'username':username
+    })
+
 
 class PostConvertPlanCreateView(LoginRequiredMixin, CreateView):
     model = Plan
