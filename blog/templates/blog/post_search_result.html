@@ -1,0 +1,48 @@
+{% extends "trips/base.html" %}
+{% block content %}
+<form method="GET" role="search" action="{% url 'post_search_result' %}">
+  <input type="text" name="q" placeholder="Search" value="{{ request.GET.q }}">
+  <button type="submit">
+    <i class="bi bi-search"></i>
+  </button>
+</form>
+    <div class="content-section">
+        <div>
+          {% if total > 0 %}
+            <div>
+              Show {{ posts.start_index }} to {{ posts.end_index }} of {{ total }} hits
+            </div>
+          {% else %}
+            <div>There are no search results fitting your keywords</div>
+          {% endif %}
+          <ul>
+            {% for post in posts %}
+            <li>
+                <h2><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2>
+                <p class="text-break text-limit-3">
+                    {{ post.content }}
+                </p>
+            </li>
+            {% endfor %}
+        </ul>
+        </div>
+    </div>
+<!-- Pagination Controls -->
+{% if posts.has_other_pages %}
+<nav>
+    <ul class="post-pagination">
+        {% if posts.has_previous %}
+            <a class="btn btn-outline-info mb-4" href="?q={{ query }}&page=1">First</a>
+            <a class="btn btn-outline-info mb-4" href="?q={{ query }}&page={{ posts.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        <li class="active"><span>Page {{ posts.number }} of {{ posts.paginator.num_pages }}</span></li>
+
+        {% if posts.has_next %}
+            <a class="btn btn-outline-info mb-4" href="?q={{ query }}&page={{ posts.next_page_number }}">Next</a>
+            <a class="btn btn-outline-info mb-4" href="?q={{ query }}&page={{ posts.paginator.num_pages }}">Last</a>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock content %}

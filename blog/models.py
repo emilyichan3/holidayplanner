@@ -29,3 +29,4 @@ class Post(models.Model):
             return cloudinary_url(
                 self.image.name, width=300, height=300, crop="lfill"
             )[0]
+

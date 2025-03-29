@@ -1,10 +1,11 @@
 {% extends "trips/base.html" %}
 {% load static %}
 {% block content %}
-<form method="GET">
-  <input type="text" name="q_country" placeholder="Search country..." value="{{ request.GET.q_country }}">
-  <input type="text" name="q_city" placeholder="Search city..." value="{{ request.GET.q_city }}">
-  <button type="submit">Search</button>
+<form method="GET" role="search" action="{% url 'post_search_result' %}">
+  <input type="text" name="q" placeholder="Search" value="{{ request.GET.q }}">
+  <button type="submit">
+    <i class="bi bi-search"></i>
+  </button>
 </form>
 <div>
   {% if user.is_authenticated %}
@@ -33,7 +34,7 @@
                 <small class="text-muted">{{ post.date_posted|date:'dS, F, Y'}}</small>
               </div>
               <h2><a class="article-title" href="{% url 'post-detail' post.id %}">{{ post.title }}</a></h2>
-              <p class="article-content">{{ post.content }}</p>
+              <p class="article-content text-break text-limit-3">{{ post.content }}</p>
             </div>
           </article>
     {% endfor %}
