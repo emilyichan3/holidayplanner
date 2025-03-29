@@ -1,4 +1,5 @@
 from django.urls import path
+
 from .views import (
     MyCategoryListView,
     MyCategoryCreateView,
@@ -26,7 +27,7 @@ from .views import (
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
-    path("myCategory/<str:username>", MyCategoryListView.as_view(), name='trips-myCategory'),
+    path("myCategory/<str:username>/", MyCategoryListView.as_view(), name='trips-myCategory'),
     path("myCategory/new/", MyCategoryCreateView.as_view(), name='trips-myCategory-new'),
     path('myCategory/<int:pk>/update/', MyCategoryUpdateView.as_view(), name='trips-myCategory-update'),
     path('myCategory/<int:pk>/delete/', MyCategoryDeleteView.as_view(), name='trips-myCategory-delete'),
@@ -49,6 +50,10 @@ urlpatterns = [
     path("CurrencyConverter/", CurrencyConverterView.as_view(), name="currencyconverter"),  # Use as_view()
 ]
 
+def custom_404_view(request, exception):
+    return render(request, '404.html', status=404)
+
+handler404 = custom_404_view
 # below code is for app's iamges using static method
 # urlpatterns += staticfiles_urlpatterns() 
 

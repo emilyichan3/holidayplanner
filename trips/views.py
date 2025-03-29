@@ -32,6 +32,7 @@ class MyCategoryListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Category
     template_name = 'trips/myCategory_list.html' # we can define the template either here or in the urls
     context_object_name = 'categories'
+    paginate_by = 10
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
@@ -124,6 +125,7 @@ class MyPlanListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Plan
     template_name = 'trips/myPlan_list.html' # we can define the template either here or in the urls
     context_object_name = 'plans'
+    paginate_by = 10
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
@@ -225,6 +227,7 @@ class MyPlanSearchListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Trip
     template_name = 'trips/myPlan_trip_seach.html' # we can define the template either here or in the urls
     context_object_name = 'trips'
+    paginate_by = 10
 
     def get_queryset(self):
         formatted_today = timezone.now().date()
@@ -275,6 +278,7 @@ class MyTripListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Trip
     template_name = 'trips/myTrip_list.html' # we can define the template either here or in the urls
     context_object_name = 'trips'
+    paginate_by = 10
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
@@ -344,7 +348,8 @@ class MyScheduleByTripListView(LoginRequiredMixin, UserPassesTestMixin, ListView
     model = Schedule
     template_name = 'trips/myTrip_schedule_list.html'
     context_object_name = 'schedules'
-    
+    paginate_by = 10
+
     def get_queryset(self):
         trip = get_object_or_404(Trip, id=self.kwargs.get('trip_id'))
         schedules = Schedule.objects.filter(
@@ -472,6 +477,7 @@ class MyScheduleSearchByMyPlanListView(LoginRequiredMixin, UserPassesTestMixin, 
     model = Plan
     template_name = 'trips/myTrip_schedule_seach.html' # we can define the template either here or in the urls
     context_object_name = 'plans'
+    paginate_by = 10
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
@@ -556,3 +562,4 @@ class MyPlanConvertCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateVie
 
 class CurrencyConverterView(TemplateView):
     template_name = 'trips/currencyConverter.html' # we can define the template either here or in the urls
+

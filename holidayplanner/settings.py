@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ['SECRET_KEY'] # Stored as an environment variable
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG') == 'TRUE'
+DEBUG = os.environ.get('DEBUG') == 'FALSE'
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', os.environ.get('RENDER_HOSTNAME', '')]
 
@@ -66,7 +66,7 @@ ROOT_URLCONF = 'holidayplanner.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
