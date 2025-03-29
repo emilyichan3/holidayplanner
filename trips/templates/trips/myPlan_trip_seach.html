@@ -9,10 +9,11 @@
   Go back 
   </a>
 </button>
-<form method="GET">
-  <input type="text" name="q_trip" placeholder="Search trip..." value="{{ request.GET.q_trip}}">
-  <input type="date" name="q_date" placeholder="Search date..." value="{{ request.GET.q_date }}">
-  <button type="submit">Search</button>
+<form method="GET" role="search">
+  <input type="text" name="q" placeholder="Search" value="{{ request.GET.q }}">
+  <button type="submit">
+    <i class="bi bi-search"></i>
+  </button>
 </form>
 
   <div class="table-responsive">

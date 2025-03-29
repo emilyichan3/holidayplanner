@@ -1,12 +1,11 @@
 {% extends "trips/base.html" %}
 {% load static %}
 {% block content %}
-<form method="GET">
-  <input type="text" name="q_country" placeholder="Search country..." value="{{ request.GET.q_country }}">
-  <input type="text" name="q_city" placeholder="Search city..." value="{{ request.GET.q_city }}">
-  <input type="text" name="q_plan_name" placeholder="Search plan name..." value="{{ request.GET.q_plan_name }}">
-  <input type="text" name="q_category" placeholder="Search category..." value="{{ request.GET.q_category }}">
-  <button type="submit">Search</button>
+<form method="GET" role="search">
+  <input type="text" name="q" placeholder="Search" value="{{ request.GET.q }}">
+  <button class="btn btn-info" type="submit">
+    <i class="bi bi-search"></i>
+  </button>
 </form>
 <button class="btn btn-outline-info">
   <a
@@ -85,7 +84,7 @@
           </tr>
           {% empty %}
           <tr>
-            <td colspan="4" class="text-center">No plans available for this category</td>
+            <td colspan="5" class="text-center">No plans available for this category</td>
           </tr>
         {% endfor %}
       </tbody>

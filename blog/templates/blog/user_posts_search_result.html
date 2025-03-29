@@ -19,10 +19,21 @@
           <ul>
             {% for post in posts %}
             <li>
-                <h2><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2>
-                <p class="text-break text-limit-3">
-                    {{ post.content }}
-                </p>
+              <div class="article-metadata">
+                <a class="mr-2" href="{% url 'user-posts' post.author.username %}">
+                  {{ post.author.first_name }} {{ post.author.last_name }} 
+                </a>
+                <small class="text-muted">
+                  <img src="https://flagcdn.com/16x12/{{ post.author.country.code|lower }}.png" 
+                  width="16" height="12" alt="{{ post.author.country.name }} flag">
+                   {{ post.author.country.name }}
+                </small>
+                <small class="text-muted">{{ post.date_posted|date:'dS, F, Y'}}</small>
+              </div>                  
+              <h2><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2>
+              <p class="text-break text-limit-3">
+                  {{ post.content }}
+              </p>
             </li>
             {% endfor %}
         </ul>

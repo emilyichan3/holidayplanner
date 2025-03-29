@@ -131,23 +131,18 @@ class MyPlanListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
             planner=user,
         ).order_by('country')
 
-        q_country = self.request.GET.get("q_country")
-        q_city = self.request.GET.get("q_city")
-        q_plan_name = self.request.GET.get("q_plan_name")
-        q_category = self.request.GET.get("q_category")
+        query = self.request.GET.get('q', '').strip()
         
-        filters = {}
-        if q_country:
-            filters["country__icontains"] = q_country.strip()
-        if q_city:
-            filters["city__icontains"] = q_city.strip()        
-        if q_plan_name:
-            filters["country__icontains"] = q_plan_name.strip()      
-        if q_category:
-            filters["categories__category_name__icontains"] = q_category.strip()  
-        if filters: 
-            plans = plans.filter(**filters)    
-
+        if query:
+            search_filter = (               
+                    Q(country__icontains=query.strip()) | 
+                    Q(city__icontains=query.strip()) | 
+                    Q(plan_name__icontains=query.strip()) | 
+                    Q(note__icontains=query.strip()) | 
+                    Q(categories__description__icontains=query))    
+                    
+            plans = plans.filter(search_filter).order_by('country').distinct()
+ 
         return plans
 
     def test_func(self):
@@ -238,27 +233,24 @@ class MyPlanSearchListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
             traveler=plan.planner,
             date_to__gte=formatted_today, 
         ).order_by('date_fm')
-        q_trip = self.request.GET.get("q_trip")
-        q_date = self.request.GET.get("q_date")
 
-        filters = {}
-        if q_trip:
-            filters["trip_name__icontains"] = q_trip.strip()
-            # trips = trips.filter(trip_name__icontains=q_trip)
+        query = self.request.GET.get('q', '').strip()
 
-        if q_date:
+        if query:
+            search_filter = (               
+                    Q(trip_name__icontains=query.strip()) | 
+                    Q(trip_description__icontains=query.strip()))    
+
             try:
-                q_date = datetime.strptime(q_date, "%Y-%m-%d").date()  # Convert string to date
-                filters["date_fm__lte"] = q_date
-                filters["date_to__gte"] = q_date
-            #     trips = trips.filter(
-            #     date_fm__lte=q_date, 
-            #     date_to__gte=q_date 
-            # )
+                query_string = query.strip()
+                print('date string: ' + query_string)
+                query_date = None
+                query_date = datetime.strptime(query_string, "%d/%m/%Y").date()  # Convert string to date
+                search_filter |= Q(date_fm__lte=query_date, date_to__gte=query_date)                
             except ValueError:
-                q_date = None  # Handle invalid date inputs
-        if filters: 
-            trips = trips.filter(**filters)    
+                pass  # If query is not a valid date, just ignore this filter
+
+            trips = trips.filter(search_filter)    
         return trips
 
     def get_context_data(self, **kwargs):
@@ -486,22 +478,18 @@ class MyScheduleSearchByMyPlanListView(LoginRequiredMixin, UserPassesTestMixin, 
         plans = Plan.objects.filter(
             planner=user,
         ).order_by('country')
-        q_country = self.request.GET.get("q_country")
-        q_city = self.request.GET.get("q_city")
-        q_plan_name = self.request.GET.get("q_plan_name")
-        q_category = self.request.GET.get("q_category")
+        
+        query = self.request.GET.get('q', '').strip()
 
-        filters = {}
-        if q_country:
-            filters["country__icontains"] = q_country.strip()
-        if q_city:
-            filters["city__icontains"] = q_city.strip()        
-        if q_plan_name:
-            filters["country__icontains"] = q_plan_name.strip()      
-        if q_category:
-            filters["categories__category_name__icontains"] = q_category.strip()  
-        if filters: 
-            plans = plans.filter(**filters)    
+        if query:
+            search_filter = (               
+                    Q(country__icontains=query.strip()) | 
+                    Q(city__icontains=query.strip()) | 
+                    Q(plan_name__icontains=query.strip()) | 
+                    Q(note__icontains=query.strip()) | 
+                    Q(categories__description__icontains=query))    
+                    
+            plans = plans.filter(search_filter).order_by('country')
 
         return plans
 
