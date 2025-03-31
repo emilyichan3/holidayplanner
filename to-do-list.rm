@@ -1,4 +1,2 @@
 layout
-
-
-
+settings.py / DEBUG=FALSE

@@ -15,11 +15,10 @@ class PostForm(forms.ModelForm):
     city = forms.CharField(max_length=80, 
                         label="Destination City",  # Ensure this line is included
                         required=False)
-    image = forms.ImageField(required=False, widget=forms.ClearableFileInput(attrs={'clearable': 'true'}))
 
     class Meta:
         model = Post
-        fields = ['title', 'content', 'country', 'city','image' ]
+        fields = ['title', 'content', 'country', 'city']
 
 
 class PostConvertCreateForm(forms.ModelForm):

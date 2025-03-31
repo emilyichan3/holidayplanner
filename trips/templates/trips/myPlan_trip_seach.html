@@ -11,7 +11,7 @@
 </button>
 <form method="GET" role="search">
   <input type="text" name="q" placeholder="Search" value="{{ request.GET.q }}">
-  <button type="submit">
+  <button class="btn btn-info" type="submit">
     <i class="bi bi-search"></i>
   </button>
 </form>
@@ -71,6 +71,6 @@
       {% endif %}
     </div>
   {% endif %}
-  
-  <script src="{% static 'trips/js/script_trips.js' %}"></script>  
+
+  {% comment %} <script src="{% static 'trips/js/script_trips.js' %}"></script>   {% endcomment %}
 {% endblock %}
