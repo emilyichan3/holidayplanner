@@ -1,7 +1,7 @@
 {% extends "trips/base.html" %}
 {% load static %}
 {% block content %}
-<form method="GET" role="search">
+<form class="local-search" method="GET" role="search">
   <input type="text" name="q" placeholder="Search" value="{{ request.GET.q }}">
   <button class="btn btn-info" type="submit">
     <i class="bi bi-search"></i>
@@ -52,13 +52,12 @@
             </td>
             <td>
               <div class="d-flex custom-gap">
-                <button class="btn btn-outline-info">
                 <a
+                  class="btn btn-outline-success"
                   href="{% url 'trips-myPlan-Search' pk=plan.id %}"
                 >
                   Add to My Trip
                 </a>
-              </button>
               </div>
             </div>              
               <div class="d-flex custom-gap">
@@ -66,7 +65,7 @@
                 <a
                   href="{% url 'trips-myPlan-update' pk=plan.id %}"
                 >
-                  Update
+                  Details
                 </a>
               </button>
               </div>

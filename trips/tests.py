@@ -27,7 +27,8 @@ class CategoryModelTests(TestCase):
 
     def test_category_str_method(self):
         category = Category.objects.get(pk=1)
-        self.assertEqual(str(category), f'{ category.category_name } is marked by { category.marker.username }')
+        self.assertEqual(str(category), f'{ category.category_name } - { category.description }')
+        # self.assertEqual(str(category), f'{ category.category_name } is marked by { category.marker.username }')
         
     def test_get_absolute_url(self):
         category = Category.objects.get(pk=1)

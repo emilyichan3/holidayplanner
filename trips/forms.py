@@ -90,7 +90,8 @@ class myScheduleCreateForm(forms.ModelForm):
                 'link',
                 'country',
                 'city',
-                'image']
+                'image',
+                'note']
         
     def __init__(self, *args, **kwargs):
         trip = kwargs.pop('trip', None)  # Extract trip instance
@@ -125,7 +126,8 @@ class myPlanConvertCreateForm(forms.ModelForm):
                 'link',
                 'country',
                 'city',
-                'image']
+                'image',
+                'note']
         
     def __init__(self, *args, **kwargs):
         trip = kwargs.pop('trip', None)  # Extract trip instance
@@ -137,6 +139,7 @@ class myPlanConvertCreateForm(forms.ModelForm):
 
         if plan:
             self.fields['destination'].initial = plan.plan_name  
+            self.fields['note'].initial = plan.note  
             self.fields['country'].initial = plan.country 
             self.fields['city'].initial = plan.city 
             self.fields['link'].initial = plan.link  

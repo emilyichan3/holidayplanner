@@ -17,7 +17,7 @@ class Category(models.Model):
     marker = models.ForeignKey(User, on_delete=models.CASCADE, related_name='marker')
      
     def __str__(self):
-        return f'{ self.category_name } is marked by { self.marker.username }'
+        return f'{ self.category_name } - { self.description }'
 
     def get_absolute_url(self):
         return reverse('trips-myCategory', kwargs={'username': self.marker.username})

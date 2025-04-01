@@ -8,7 +8,10 @@ body {
     color: #333333;
     margin-top: 5rem;
   }
-  
+main {
+  margin-bottom: 10px;
+}
+
   h1,
   h2,
   h3,
@@ -28,21 +31,45 @@ body {
   }
 
   .bg-steel {
-    background-color: #5f788a;
+    background-color: #0f4857;
   }
   
   .site-header .navbar-nav .nav-link {
-    color: #cbd5db;
+    position: relative;
+    color: #ffffff;
+    text-decoration: none;
+    padding-bottom: 5px; /* Add space for underline */
+    transition: color 0.3s ease-in-out;
   }
   
   .site-header .navbar-nav .nav-link:hover {
     color: #ffffff;
-  }
+}
+
+.site-header .navbar-nav .nav-link:hover::after {
+    width: 100%;
+}
   
+.site-header .navbar-nav .nav-link::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background-color: #ffffff; 
+  transition: all 0.5s ease-in-out;
+  transform: translateX(-50%);
+}
+
   .site-header .navbar-nav .nav-link.active {
-    font-weight: 500;
+    font-weight: bold;
   }
   
+  .nav-item .active {
+    font-weight: bold;
+}
+
   .content-section {
     background: #ffffff;
     padding: 10px 20px;
@@ -68,6 +95,25 @@ body {
     margin-right: 16px;
   }
 /* custom CSS */
+.local-search {
+  display: block;
+  max-width: 400px;
+}
+
+.local-search input {
+  display: inline;
+
+  width: 80%;
+  height: 35px;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.local-search button {
+  height: 35px;
+  margin-bottom: 5px;
+  background-color: orange;
+}
 
 .d-lg-flex {
   flex-wrap: wrap;
