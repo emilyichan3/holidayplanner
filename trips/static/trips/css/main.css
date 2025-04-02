@@ -171,6 +171,16 @@ table {
   overflow:scroll; 
 }
 
+table th td {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden; 
+}
+
+.table {
+  table-layout: fixed;
+}
+
 .custom-gap {
   padding: 5px;
 }
@@ -224,9 +234,6 @@ ul .custom-li {
 .link_forcus {
   font-weight: bold;
 }
-.table-layout {
-  table-layout: fixed;
-}
 
 .text-limit-3 {
   display: -webkit-box; 
@@ -236,4 +243,3 @@ ul .custom-li {
   max-height: 4.5em; /* Adjust based on font size */
   white-space: normal; /* Ensures text wraps properly */  
 }
-

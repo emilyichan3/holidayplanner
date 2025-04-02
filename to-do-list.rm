@@ -1,2 +1,3 @@
-layout - image / table - fix columns width / note (maxium 3 lines)
+cloudinary.exceptions.Error: File size too large. Got 13212753. Maximum is 10485760.
+
 settings.py / DEBUG=FALSE

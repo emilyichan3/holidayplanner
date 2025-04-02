@@ -15,7 +15,6 @@
           <th scope="col">Select</th>
           <th scope="col">Trip</th>
           <th scope="col">Period</th>
-          <th scope="col"></th>
         </tr>
       </thead>
       <tbody>
@@ -35,21 +34,13 @@
           </tr>
           {% empty %}
           <tr>
-            <td colspan="4" class="text-center">No trips available</td>
+            <td colspan="3" class="text-center">No trips available</td>
           </tr>
         {% endfor %}
       </tbody>
     </table>    
   </div>
   
-  <button class="btn btn-outline-info">
-    <a
-    href="{% url 'trips-myPlan' username=user.username %}"
-  >
-    Go back 
-    </a>
-  </button>
-
   {% if is_paginated %}
     <div class='post-pagination'>
       {% if page_obj.has_previous %}
@@ -72,5 +63,11 @@
     </div>
   {% endif %}
 
-  {% comment %} <script src="{% static 'trips/js/script_trips.js' %}"></script>   {% endcomment %}
+  <button class="btn btn-outline-info">
+    <a
+    href="{% url 'trips-myPlan' username=user.username %}"
+  >
+    Go back 
+    </a>
+  </button>
 {% endblock %}
