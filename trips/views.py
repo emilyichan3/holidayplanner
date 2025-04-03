@@ -24,7 +24,7 @@ from .forms import PlanForm, myTripCreateForm, myScheduleCreateForm, myPlanConve
 from django.views.generic import TemplateView
 from django.core.paginator import Paginator
 import cloudinary.uploader
-
+import cloudinary.exceptions
 
 User = get_user_model()
 
@@ -396,14 +396,25 @@ class MyScheduleByTripCreateView(LoginRequiredMixin, UserPassesTestMixin, Create
         form.instance.traveler = self.request.user
         if form.instance.scheduled_date < trip.date_fm:
             messages.error(self.request, f"The date visited must be on or after the trip's frist date.: {trip.date_fm.strftime('%Y-%m-%d')}.")
-            return redirect(reverse("trips-mySchedule-by-myTrip", kwargs={"trip_id": self.kwargs.get('trip_id')}))
+            # return redirect(reverse("trips-mySchedule-by-myTrip", kwargs={"trip_id": self.kwargs.get('trip_id')}))
+            return redirect(self.get_success_url())
         if form.instance.scheduled_date > trip.date_to:
             messages.error(self.request, f"The date visited must be on or before the trip's last date.: {trip.date_to.strftime('%Y-%m-%d')}.")
-            return redirect(reverse("trips-mySchedule-by-myTrip", kwargs={"trip_id": self.kwargs.get('trip_id')}))
+            # return redirect(reverse("trips-mySchedule-by-myTrip", kwargs={"trip_id": self.kwargs.get('trip_id')}))
+            return redirect(self.get_success_url())
         # print('Form:', form)
         print('form.cleaned_data:', form.cleaned_data)
-        print('request.FILES:', self.request.FILES)
-        return super().form_valid(form)
+
+        try:
+            return super().form_valid(form)  # Try saving the form
+
+        except cloudinary.exceptions.Error as e:
+            if "File size too large" in str(e):
+                messages.error(self.request, "Upload failed: The file size exceeds the 10MB limit. Please upload a smaller file.")
+            else:
+                messages.error(self.request, f"An unexpected error occurred: {e}")
+            return redirect(self.get_success_url())
+        
 
     def get_success_url(self):
         """Dynamically generate the success URL with username."""
@@ -452,11 +463,21 @@ class MyScheduleByTripUpdateView(LoginRequiredMixin, UserPassesTestMixin, Update
         form.instance.traveler = self.request.user
         if form.instance.scheduled_date < trip.date_fm:
             messages.error(self.request, f"The date visited must be on or after the trip's frist date.: {trip.date_fm.strftime('%Y-%m-%d')}.")
-            return redirect(reverse("trips-mySchedule-by-myTrip", kwargs={"trip_id": self.kwargs.get('trip_id')}))
+            # return redirect(reverse("trips-mySchedule-by-myTrip", kwargs={"trip_id": self.kwargs.get('trip_id')}))
+            return redirect(self.get_success_url())
         if form.instance.scheduled_date > trip.date_to:
             messages.error(self.request, f"The date visited must be on or before the trip's last date.: {trip.date_to.strftime('%Y-%m-%d')}.")
-            return redirect(reverse("trips-mySchedule-by-myTrip", kwargs={"trip_id": self.kwargs.get('trip_id')}))
-        return super().form_valid(form)
+            # return redirect(reverse("trips-mySchedule-by-myTrip", kwargs={"trip_id": self.kwargs.get('trip_id')}))
+            return redirect(self.get_success_url())
+        try:
+            return super().form_valid(form)  # Try saving the form
+
+        except cloudinary.exceptions.Error as e:
+            if "File size too large" in str(e):
+                messages.error(self.request, "Upload failed: The file size exceeds the 10MB limit. Please upload a smaller file.")
+            else:
+                messages.error(self.request, f"An unexpected error occurred: {e}")
+            return redirect(self.get_success_url())
 
 
 class MyScheduleByTripDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):

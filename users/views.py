@@ -11,6 +11,7 @@ from django.dispatch import receiver
 from .models import Profile #We want to import Profile from our models as we we will be creating a new profile
 from django.contrib.auth.models import User #The user model will be the sender
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+import cloudinary.exceptions
 
 # Create your views here.
 def register(request):
@@ -34,9 +35,16 @@ def profile(request):
                                    request.FILES,
                                    instance=request.user)
         if  p_form.is_valid():
-            p_form.save()
-            messages.success(request, f'Your account has been updated') #Changes here
-            return redirect('profile') #Changes here
+            try:
+                p_form.save()
+                messages.success(request, f'Your account has been updated') #Changes here
+                return redirect('profile') #Changes here
+            
+            except cloudinary.exceptions.Error as e:
+                if "File size too large" in str(e):
+                    messages.error(request, "Upload failed: The file size exceeds the 10MB limit. Please upload a smaller file.")
+                else:
+                    messages.error(request, f"An unexpected error occurred: {e}")
         else:
             messages.error(request, 'Please correct the errors below.')  # Show an error message
     else:

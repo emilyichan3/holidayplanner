@@ -1,3 +1,1 @@
-cloudinary.exceptions.Error: File size too large. Got 13212753. Maximum is 10485760.
-
-settings.py / DEBUG=FALSE
+settings.py / DEBUG=FALSEg
