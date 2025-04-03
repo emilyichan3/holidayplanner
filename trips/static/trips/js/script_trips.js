@@ -4,14 +4,19 @@ document.addEventListener("DOMContentLoaded", function () {
     const mainContent = document.querySelector("main"); // Adjust this if your main content uses a different tag
 
     navbarToggler.addEventListener("click", function () {
-      setTimeout(() => {
-        if (navbarCollapse.classList.contains("show")) {
-            console.log('show');
-          mainContent.style.marginTop = "320px"; // Adjust based on navbar height
-        } else {
-            console.log('hide');
-          mainContent.style.marginTop = "0px";
-        }
-      }, 500); // Delay to ensure class changes first
+        // Wait for the class to be applied
+        setTimeout(() => {
+            if (navbarCollapse.classList.contains("show")) {
+                // If user is logged in, move the main content down fully
+                if (isUserLoggedIn) {
+                    mainContent.style.marginTop = "350px"; // Adjust as needed based on navbar height
+                } else {
+                    // If the user is not logged in, move content down by half the height
+                    mainContent.style.marginTop = "210px"; // Half of the navbar height
+                }
+            } else {
+                mainContent.style.marginTop = "0"; // Reset margin when collapsed
+            }
+        }, 400); // Adjust the delay if needed
     });
-  });
+});

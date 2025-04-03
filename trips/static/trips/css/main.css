@@ -34,34 +34,7 @@ main {
     background-color: #0f4857;
   }
   
-  .site-header .navbar-nav .nav-link {
-    position: relative;
-    color: #ffffff;
-    text-decoration: none;
-    padding-bottom: 5px; /* Add space for underline */
-    transition: color 0.3s ease-in-out;
-  }
-  
-  .site-header .navbar-nav .nav-link:hover {
-    color: #ffffff;
-}
-
-.site-header .navbar-nav .nav-link:hover::after {
-    width: 100%;
-}
-  
-.site-header .navbar-nav .nav-link::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: 0;
-  width: 0;
-  height: 2px;
-  background-color: #ffffff; 
-  transition: all 0.5s ease-in-out;
-  transform: translateX(-50%);
-}
-
+ 
   .site-header .navbar-nav .nav-link.active {
     font-weight: bold;
   }
@@ -95,6 +68,34 @@ main {
     margin-right: 16px;
   }
 /* custom CSS */
+.site-header .navbar-nav .nav-link {
+  position: relative;
+  color: #ffffff;
+  text-decoration: none;
+  padding-bottom: 5px; /* Add space for underline */
+  transition: color 0.3s ease-in-out;
+}
+
+.site-header .navbar-nav .nav-link:hover {
+  color: #ffffff;
+}
+
+.site-header .navbar-nav .nav-link:hover::after {
+  width: 100%;
+}
+
+.site-header .navbar-nav .nav-link::after {
+content: "";
+position: absolute;
+left: 50%;
+bottom: 0;
+width: 0;
+height: 2px;
+background-color: #ffffff; 
+transition: all 0.5s ease-in-out;
+transform: translateX(-50%);
+}
+
 .local-search {
   display: block;
   max-width: 400px;
@@ -251,3 +252,11 @@ ul .custom-li {
 main {
   transition: margin-top 0.1s ease-in-out; /* Smooth transition for margin change */
 }
+
+@media (max-width: 767px) {
+  .site-header .navbar-nav .nav-link::after {
+    display: none; /* Hide the underline on small screens */
+  }
+}
+
+
