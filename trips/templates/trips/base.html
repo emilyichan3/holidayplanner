@@ -46,7 +46,8 @@
         </div>
       </nav>
     </header>
-      <main role="main" class="container">
+    <div class="wrapper">
+      <main role="main" class="container content">
           <div class="col-md-12">
             {% if messages %}
               {% for message in messages %}
@@ -61,7 +62,8 @@
             {% endif %}
             {% block content %}{% endblock %}
           </div>
-      </main>  
+      </main> 
+    </div>
     <footer class="footer bg-steel sticky-bottom">
       <div class="container">
           <div class="row ">
