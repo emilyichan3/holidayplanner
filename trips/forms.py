@@ -36,8 +36,8 @@ class PlanForm(forms.ModelForm):
 class myTripCreateForm(forms.ModelForm):
     trip_name = forms.CharField(max_length=200)
     trip_description = forms.CharField(max_length=500)
-    date_fm = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    date_to = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    date_fm = forms.DateField(label="Date From", widget=forms.DateInput(attrs={'type': 'date'}))
+    date_to = forms.DateField(label="Date To", widget=forms.DateInput(attrs={'type': 'date'}))
 
     class Meta:
         model = Trip
@@ -72,8 +72,8 @@ class myTripCreateForm(forms.ModelForm):
 class myScheduleCreateForm(forms.ModelForm):
     destination = forms.CharField(max_length=200)
     city = forms.CharField(max_length=80, required=False)
-    scheduled_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    scheduled_time = forms.TimeField(required=False, widget=forms.TimeInput(attrs={'type': 'time'}))
+    scheduled_date = forms.DateField(label="Schedule Date", widget=forms.DateInput(attrs={'type': 'date'}))
+    scheduled_time = forms.TimeField(label="Schedule Time", required=False, widget=forms.TimeInput(attrs={'type': 'time'}))
     image = forms.ImageField(required=False, widget=forms.ClearableFileInput(attrs={'clearable': 'true'}))
     link = forms.URLField(
         label='Enter a URL',
@@ -108,8 +108,8 @@ class myPlanConvertCreateForm(forms.ModelForm):
         required=False
         )
     city = forms.CharField(max_length=80, required=False)
-    scheduled_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    scheduled_time = forms.TimeField(required=False, widget=forms.TimeInput(attrs={'type': 'time'}))
+    scheduled_date = forms.DateField(label="Schedule Date", widget=forms.DateInput(attrs={'type': 'date'}))
+    scheduled_time = forms.TimeField(label="Schedule Time", required=False, widget=forms.TimeInput(attrs={'type': 'time'}))
     image = forms.ImageField(required=False, widget=forms.ClearableFileInput(attrs={'clearable': 'true'}))
     link = forms.URLField(
         label='Enter a URL',

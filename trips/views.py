@@ -463,11 +463,10 @@ class MyScheduleByTripUpdateView(LoginRequiredMixin, UserPassesTestMixin, Update
         form.instance.traveler = self.request.user
         if form.instance.scheduled_date < trip.date_fm:
             messages.error(self.request, f"The date visited must be on or after the trip's frist date.: {trip.date_fm.strftime('%Y-%m-%d')}.")
-            # return redirect(reverse("trips-mySchedule-by-myTrip", kwargs={"trip_id": self.kwargs.get('trip_id')}))
             return redirect(self.get_success_url())
+
         if form.instance.scheduled_date > trip.date_to:
             messages.error(self.request, f"The date visited must be on or before the trip's last date.: {trip.date_to.strftime('%Y-%m-%d')}.")
-            # return redirect(reverse("trips-mySchedule-by-myTrip", kwargs={"trip_id": self.kwargs.get('trip_id')}))
             return redirect(self.get_success_url())
         try:
             return super().form_valid(form)  # Try saving the form
