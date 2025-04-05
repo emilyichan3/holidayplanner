@@ -249,9 +249,6 @@ ul .custom-li {
   transition: height 0.3s ease-in-out;
 }
 
-main {
-  transition: margin-top 0.1s ease-in-out; /* Smooth transition for margin change */
-}
 
 @media (max-width: 767px) {
   .site-header .navbar-nav .nav-link::after {
