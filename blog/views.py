@@ -16,7 +16,8 @@ from .forms import PostForm, PostConvertCreateForm
 from .models import Post
 from trips.models import Category, Plan
 from django import template
-
+from django.contrib import messages
+from django.shortcuts import redirect
 
 User = get_user_model()
 
@@ -158,6 +159,15 @@ class PostConvertPlanCreateView(LoginRequiredMixin, CreateView):
     model = Plan
     template_name = 'blog/post_add_myPlan_form.html'
     form_class = PostConvertCreateForm
+
+    def dispatch(self, request, *args, **kwargs):
+        # dispatch() runs before get(), post(), etc.
+        # Check if user has any categories
+        user_categories = Category.objects.filter(marker=request.user)
+        if not user_categories.exists():
+            messages.warning(self.request, "You need to create a category before making a plan.")
+            return redirect('trips-myCategory', username=request.user.username)  
+        return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse("post-detail", kwargs={"pk": self.kwargs.get('pk')})

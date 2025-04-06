@@ -37,6 +37,10 @@
               <p class="article-content text-break text-limit-3">{{ post.content }}</p>
             </div>
           </article>
+    {% empty %}
+          <div>
+            <p>Looks like there are no posts yet. Log in and share your trip with the world!</p>
+          </div>
     {% endfor %}
 
     {% if is_paginated %}

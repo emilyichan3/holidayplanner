@@ -57,6 +57,12 @@
                       <li>{{ message }}</li> 
                     </ul> 
                   </div>
+                {% elif message.tags == 'warning' %}
+                <div class="alert alert-block alert-warning"> 
+                  <ul class="m-0"> 
+                    <li>{{ message }}</li> 
+                  </ul> 
+                </div>
                 {% endif %}
               {% endfor %}
             {% endif %}

@@ -156,6 +156,15 @@ class MyPlanCreateView(LoginRequiredMixin, CreateView):
     template_name = 'trips/myPlan_form.html'
     form_class = PlanForm
 
+    def dispatch(self, request, *args, **kwargs):
+        # dispatch() runs before get(), post(), etc.
+        # Check if user has any categories
+        user_categories = Category.objects.filter(marker=request.user)
+        if not user_categories.exists():
+            messages.warning(self.request, "You need to create a category before making a plan.")
+            return redirect('trips-myCategory', username=request.user.username)  
+        return super().dispatch(request, *args, **kwargs)
+
     def get_success_url(self):
         """Dynamically generate the success URL with username."""
         username = self.request.user.username
